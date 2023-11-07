@@ -476,7 +476,7 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
                           <MediumColorIcon style={{ backgroundColor: "red" }} />
                           <SpanText>と</SpanText>
                           <MediumColorIcon style={{ backgroundColor: strFeedPoint[1].color }}></MediumColorIcon>
-                          <SpanText >のように整列する</SpanText>
+                          <SpanText >に続けて配置</SpanText>
                         </Button>
                       )}
                     </FeedButtonItem>

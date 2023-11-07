@@ -1,0 +1,17 @@
+.rc-slider-mark-text {
+    font-size: 14px;
+    color: black;
+  }
+  
+  .rc-slider-dot {
+    bottom:-5px;
+    height: 10px;
+    width:10px;
+    border-color:antiquewhite;
+    border-radius:3px solid rgb(40,40,40);
+  }
+  .rc-slider-handle{
+   width:20px;
+   height:20px;
+   border:solid 4px  #96dbfa;
+  }

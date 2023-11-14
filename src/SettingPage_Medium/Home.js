@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect, useRef, createRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, createRef } from 'react';
 
 const MainContentWrapper = styled.div`
   padding-left:10px;
@@ -354,6 +354,13 @@ const InputCell = styled.div`
   align-items: center; /* This is for vertical centering when the parent is a flex container */
 `
 const MEDIUM_COLOR = ['rgb(255,255,255)', 'rgb(0,0,0)', 'rgb(0,0,200)', 'rgb(0,255,0)', 'rgb(255,255,0)'];
+const sections = [
+  { label: 'DielectricConstant', iconSrc: '/epsilondash.svg', altText: 'Dielectric Constant Icon' },
+  { label: 'DielectricLoss', iconSrc: '/epsilondash2.svg', altText: 'Dielectric Loss Icon' },
+  { label: 'MagneticConstant', iconSrc: '/mudash.svg', altText: 'Magnetic Constant Icon' },
+  { label: 'MagneticLoss', iconSrc: '/mudash2.svg', altText: 'Magnetic Loss Icon' }
+];
+const mediumField = ['DielectricConstant', 'DielectricLoss', 'MagneticConstant', 'MagneticLoss'];
 
 export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
   const [inputMedium, setInputMedium] = useState([]);
@@ -378,16 +385,14 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
     setInputMedium(stringMedium);
 
   }, [medium, mediumColor])
-  const handleFocus = (event) => {
-    const input = event.target;
-    const length = input.value.length;
-    input.setSelectionRange(length, length);
-  };
+
   const handleInputChange = (columnIndex, field, value) => {
     if (!/^[0-9.]*$/.test(value)) return;
-    const newMedium = [...inputMedium];
-    newMedium[columnIndex][field] = value;
-    setInputMedium(newMedium);
+    setInputMedium((prevInputMedium) => {
+      const newMedium = [...prevInputMedium];
+      newMedium[columnIndex][field] = value;
+      return newMedium;
+    });
   };
 
   function delete_Onclick(index) {
@@ -437,7 +442,33 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
       setErrorLog(error);
     }
   }
-
+  const MediumInput = ({ index, field, value, handleInputChange }) => (
+    <Input>
+      <InputCell>
+        <InputText
+          maxLength="13"
+          type="text"
+          value={value}
+          onChange={(e) => handleInputChange(index, field, e.target.value)}
+        />
+      </InputCell>
+    </Input>
+  );
+  const InputField = React.memo(({ value, onChange, onKeyDown, maxLength, type }) => {
+    return (
+      <Input>
+        <InputCell>
+          <InputText
+            maxLength={maxLength}
+            type={type}
+            value={value}
+            onChange={onChange}
+            onKeyDown={onKeyDown}
+          />
+        </InputCell>
+      </Input>
+    );
+  });
   return (
     <div className="App">
       <MainContentWrapper>
@@ -451,7 +482,7 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                       <FrontHeaderLeft>
                         <TitleWrapper>
                           <TitleInner>
-                            <CustomH3 style={{ margin: 0 }}>媒質の設定</CustomH3>
+                            <CustomH3 style={{ margin: 0 }}>Configure medium</CustomH3>
                           </TitleInner>
                         </TitleWrapper>
                       </FrontHeaderLeft>
@@ -461,81 +492,35 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                     <ContentBodyRow>
                       <Garbage_Inner></Garbage_Inner>
                       <MediumColorIcon style={{ border: '0px solid white' }}></MediumColorIcon>
-                      <SectionColumn>
-                        <ColumnLabel>複素誘電率実部</ColumnLabel>
-                        <SVGWrapper style={{}}>
-                          <SVGInner>
-                            <StyledImg
-                              src={`${process.env.PUBLIC_URL}/epsilondash.svg`}
-                              alt="Trash Icon"
-                            />
-                          </SVGInner>
-                        </SVGWrapper>
-                      </SectionColumn>
-                      <SectionColumn>
-                        <ColumnLabel>複素誘電率虚部</ColumnLabel>
-                        <SVGWrapper style={{}}>
-                          <SVGInner>
-                            <StyledImg
-                              src={`${process.env.PUBLIC_URL}/epsilondash2.svg`}
-                              alt="Trash Icon"
-                            />
-                          </SVGInner>
-                        </SVGWrapper>
-                      </SectionColumn>
-                      <SectionColumn>
-                        <ColumnLabel>複素透磁率実部</ColumnLabel>
-                        <SVGWrapper style={{}}>
-                          <SVGInner>
-                            <StyledImg
-                              src={`${process.env.PUBLIC_URL}/mudash.svg`}
-                              alt="Trash Icon"
-                            />
-                          </SVGInner>
-                        </SVGWrapper>
-                      </SectionColumn>
-                      <SectionColumn>
-                        <ColumnLabel>複素透磁率虚部</ColumnLabel>
-                        <SVGWrapper style={{}}>
-                          <SVGInner>
-                            <StyledImg
-                              src={`${process.env.PUBLIC_URL}/mudash2.svg`}
-                              alt="Trash Icon"
-                            />
-                          </SVGInner>
-                        </SVGWrapper>
-                      </SectionColumn>
+                      {sections.map((section) => (
+                        <SectionColumn key={section.label}>
+                          <ColumnLabel>{section.label}</ColumnLabel>
+                          <SVGWrapper>
+                            <SVGInner>
+                              <StyledImg
+                                src={`${process.env.PUBLIC_URL}${section.iconSrc}`}
+                                alt={section.altText}
+                              />
+                            </SVGInner>
+                          </SVGWrapper>
+                        </SectionColumn>
+                      ))}
                     </ContentBodyRow>
-                    {defaultMedium.map((column, index) => (
+                    {defaultMedium.map((medium, index) => (
                       <ContentBodyRow key={index}>
                         <Garbage_Inner></Garbage_Inner>
                         <MediumColorIcon style={{ backgroundColor: MEDIUM_COLOR[index] }}></MediumColorIcon>
                         <LabelRow>
-                          <LabelCell>
-                            <LabelText>
-                              {column.DielectricConstant}
-                            </LabelText>
-                          </LabelCell>
-                          <LabelCell>
-                            <LabelText>
-                              {column.DielectricLoss}
-                            </LabelText>
-                          </LabelCell>
-                          <LabelCell>
-                            <LabelText>
-                              {column.MagneticConstant}
-                            </LabelText>
-                          </LabelCell>
-                          <LabelCell>
-                            <LabelText>
-                              {column.MagneticLoss}
-                            </LabelText>
-                          </LabelCell>
+                          {mediumField.map((field) => (
+                            <LabelCell key={field}>
+                              <LabelText>{medium[field]}</LabelText>
+                            </LabelCell>
+                          ))}
                         </LabelRow>
                       </ContentBodyRow>
                     ))}
                     {inputMedium.map((column, index) => (
-                      <ContentBodyRow key={index}>
+                      <ContentBodyRow key={column.id || index}>
                         <Garbage_Inner
                           onMouseEnter={() => handleHover(index)}
                           onMouseLeave={handleLeave}
@@ -551,6 +536,7 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                           </SVGWrapper>
                         </Garbage_Inner>
                         <MediumColorIcon style={{ backgroundColor: MEDIUM_COLOR[index + 2] }}></MediumColorIcon>
+
                         <LabelRow>
                           <Input>
                             <InputCell>
@@ -609,7 +595,7 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                     ))}
                     {inputMedium.length < 3 && (
                       <RowFlex>
-                        <AWSStyledButton onClick={() => addMedium()}>媒質の追加</AWSStyledButton>
+                        <AWSStyledButton onClick={() => addMedium()}>Add medium</AWSStyledButton>
                       </RowFlex>
                     )}
                     {errorlog.map((value, index) => (
@@ -674,6 +660,6 @@ function isValidNumber(input) {
     return "有効桁数は４桁までです";
   }
   var v = parseFloat(str);
-  if(typeof v !== 'number')return "有効な数字ではありません";
+  if (typeof v !== 'number') return "有効な数字ではありません";
   return true;
 }

@@ -110,10 +110,8 @@ const BoxWrapper = styled.div`
 `
 const ButtonReturnWrapper = styled.div`
   text-align: center;
-  display: flex;
   padding-top:14px;
   align-items: center;
-  margin:auto;
 `
 const ButtonReturn = styled.div`
   backface-visibility: hidden;
@@ -145,7 +143,13 @@ const ButtonReturn = styled.div`
     background-color:#EB5F07;
 }
 `
-
+const JustFlexRow=styled.div`
+display:flex;
+flex-direction:row;
+gap:40px;
+align-items:center;
+justify-content:center;
+`
 export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) => {
   const [rectDrawData, setRectDrawData] = useState({ width: 0, height: 0 });
   const [rectDraftDrawData, setRectDraftDrawData] = useState({ width: 0, height: 0 });
@@ -175,7 +179,6 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
       setHomeRectDrawData(maker_RECTForHOME(currentDraft.setting));
       setSetting(currentDraft.setting);
     });
-
     setShowWindow("home");
   }
   const ArrowRowComponent =
@@ -212,12 +215,14 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
 
               <BoxGrid {...gridBoxProps} />
               <BoxDomain {...domainBoxProps} />
+              <JustFlexRow>
               <ButtonReturnWrapper>
-                <ButtonReturn onClick={() => save()}>変更を保存</ButtonReturn>
+                <ButtonReturn onClick={() => save()}>Save</ButtonReturn>
               </ButtonReturnWrapper>
               <ButtonReturnWrapper>
-                <ButtonReturn onClick={() => setShowWindow("home")}>戻る</ButtonReturn>
+                <ButtonReturn onClick={() => setShowWindow("home")}>Go Home</ButtonReturn>
               </ButtonReturnWrapper>
+              </JustFlexRow>
             </BoxWrapper>
           </ToggleInner>
         </ToggleWrapper>

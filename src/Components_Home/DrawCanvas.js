@@ -5,7 +5,7 @@ import { React } from 'react';
 import {
   checker_DRAWDATA,
   checker_NOCHANGE,
-  compare_ONLYLAMBDACHANGE,
+  compare_ONLYFREQCHANGE,
   compare_ONLYMEDIUMCHANGE,
   compare_ONLYFEEDPOINTCHANGE,
   compare_RectNOCHANGE,
@@ -48,7 +48,7 @@ var bitmap;
 var xnum;
 var ynum;
 var fieldX;
-var lambda;
+var freq;
 let medium;
 const MEDIUM_COLOR = ['rgb(255,255,255)', 'rgb(0,0,0)', 'rgb(0,0,200)', 'rgb(0,255,0)', 'rgb(255,2250,0)'];
 
@@ -85,9 +85,9 @@ export const DrawCanvas = ({ drawData, setBitmap, setFeedPoint, selectedIndex,re
     } else if (checker_NOCHANGE(drawData, prevDrawDataRef.current) && compare_RectNOCHANGE(prevRect, width, height)) {
       console.log("no change");
       return;
-    } else if (compare_ONLYLAMBDACHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
+    } else if (compare_ONLYFREQCHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
       console.log("only lambda");
-      lambda = drawData.setting.lambda;
+      freq = drawData.setting.freq;
       draw_canvas();
     } else if (compare_ONLYMEDIUMCHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
       console.log("only medium");
@@ -112,17 +112,18 @@ export const DrawCanvas = ({ drawData, setBitmap, setFeedPoint, selectedIndex,re
       });
       setWidth(Rect.width); setHeight(Rect.height);
 
-      let setting = drawData.setting;
-      lambda = setting.lambda;
-      fieldX = setting.fieldX;
-      let dx = setting.fieldX / setting.split;
-      xnum = setting.split;
-      ynum = Math.ceil(setting.fieldY / dx);
+      const {setting,feedPoint:inputFeedPoint,bitmap:inputBitmap,medium:inputMedium}=drawData;
+      const {fieldX:inputFieldX,fieldY:inputFieldY,split,freq:inputFreq}=setting;
+      freq=inputFreq;
+      fieldX = inputFieldX;
+      xnum = split;
+      let dx = fieldX / xnum;
+      ynum = Math.ceil(inputFieldY / dx);
       canvasDx = width / xnum;
       canvasDy = width / xnum;
-      feedPoint = maker_FEEDPOINT(drawData.feedPoint, setFeedPoint, xnum, ynum);
-      bitmap = maker_BITMAP(drawData.bitmap, setBitmap, xnum, ynum);
-      medium = drawData.medium;
+      feedPoint = maker_FEEDPOINT(inputFeedPoint, setFeedPoint, xnum, ynum);
+      bitmap = maker_BITMAP(inputBitmap, setBitmap, xnum, ynum);
+      medium = inputMedium;
       drag = false;
       drag_source = false;
       draw_canvas_background();
@@ -349,7 +350,7 @@ export const DrawCanvas = ({ drawData, setBitmap, setFeedPoint, selectedIndex,re
       const m = medium[mediumIndex];
       if (m.DielectricLoss !== 0 || m.MagneticLoss !== 0) return;
 
-      let realRadius = lambda * width / fieldX;
+      let realRadius = 3e8/freq * width / fieldX;
       realRadius = realRadius / Math.sqrt(m.DielectricConstant * m.MagneticConstant);
       const numm = (height / realRadius) > (width / realRadius) ? height / realRadius : width / realRadius;
       let numCircles = (numm > 40) ? 40 : numm;

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 65">
+    <!-- Triangle -->
+    15,55 50,10 85,55
+ <polygon points="85,13 50,52 15,13" fill="black" stroke="black" stroke-linejoin="round" stroke-width="6"/>
+ </svg>

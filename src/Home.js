@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from 'react';
 
-import { Link } from './Components/Link';
+import { Link } from './Link';
 import { DrawCanvas } from './Components_Home/DrawCanvas';
 import { SimulationCanvas } from './Components_Home/SimulationCanvas';
 import { RightBar } from './Components_Home/RightBar';
@@ -47,13 +47,13 @@ const LeftBar = styled.div`
 `
 
 export const Home = () => {
-  const { SETTING, MEDIUM, BITMAP, FEEDPOINT, AMPLITUDESCALER, COLORTHRESHOLD } = DEFAULT;
+  const { SETTING, MEDIUM, BITMAP, FEEDPOINT, AMPLITUDESCALER,COLOR} = DEFAULT;
   const [setting, setSetting] = useState(SETTING);
   const [medium, setMedium] = useState(MEDIUM);
   const [bitmap, setBitmap] = useState(BITMAP);
   const [feedPoint, setFeedPoint] = useState(FEEDPOINT);
   const [amplitudeScaler, setAmplitudeScaler] = useState(AMPLITUDESCALER);
-  const [colorThreshold, setColorThreshold] = useState(COLORTHRESHOLD);
+  //const [colorThreshold, setColorThreshold] = useState(COLORTHRESHOLD);
   const [drawData, setDrawData] = useState({});
   const [simulationData, setSimulationData] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -62,7 +62,8 @@ export const Home = () => {
   const [showWindow, setShowWindow] = useState("home");
   const [LinkBread, setLinkBread] = useState([]);
   const [moveVideo, setMoveVideo] = useState(false);
-
+  //const [colorGradientIndex,setColorGradientIndex]=useState(COLORGRADIENTINDEX);
+  const [color,setColor]=useState(COLOR);
   const drawCanvasProps = {
     drawData,
     setBitmap,
@@ -85,9 +86,9 @@ export const Home = () => {
     feedPoint, setFeedPoint,
     medium,
     amplitudeScaler, setAmplitudeScaler,
-    colorThreshold, setColorThreshold,
+    color, setColor,
     showSimulation, setShowSimulation,
-    moveVideo, setMoveVideo
+    moveVideo, setMoveVideo,
   };
   const simulationCanvasProps = {
     simulationData,
@@ -118,7 +119,7 @@ export const Home = () => {
   }
   useEffect(() => {
     setShowSimulation(false);
-  }, [selectedIndex, colorThreshold, amplitudeScaler])
+  }, [selectedIndex, color, amplitudeScaler])
   useEffect(() => {
     updateLinkBread(showWindow, BREAD, setLinkBread);
   }, [showWindow]);
@@ -132,7 +133,7 @@ export const Home = () => {
       bitmap: bitmap,
       feedPoint: feedPoint,
       medium: medium,
-      colorThreshold: colorThreshold,
+      color: color,
       amplitudeScaler: amplitudeScaler
     }
     setShowSimulation(true);
@@ -143,7 +144,7 @@ export const Home = () => {
     setSetting(SETTING);
     setBitmap(BITMAP);
     setAmplitudeScaler(AMPLITUDESCALER);
-    setColorThreshold(COLORTHRESHOLD);
+    setColor(COLOR);
     setFeedPoint(FEEDPOINT);
     setMedium(MEDIUM);
     setSelectedIndex(0);

@@ -295,10 +295,10 @@ export const BoxMedium = ({ medium, selectedIndex, setSelectedIndex, setShowWind
     setSelectedIndex(index);
   }
   const SECTIONS = [
-    { label: '複素誘電率実部', imgSrc: '/epsilondash.svg', altText: 'Epsilon Dash Icon', },
-    { label: '複素誘電率虚部', imgSrc: '/epsilondash2.svg', altText: 'Epsilon Dash 2 Icon', },
-    { label: '複素透磁率実部', imgSrc: '/mudash.svg', altText: 'Mu Dash Icon', },
-    { label: '複素透磁率虚部', imgSrc: '/mudash2.svg', altText: 'Mu Dash 2 Icon', },
+    { label: 'DielectricConstant', imgSrc: '/epsilondash.svg', altText: 'Epsilon Dash Icon', },
+    { label: 'DielectricLoss', imgSrc: '/epsilondash2.svg', altText: 'Epsilon Dash 2 Icon', },
+    { label: 'MagneticConstant', imgSrc: '/mudash.svg', altText: 'Mu Dash Icon', },
+    { label: 'MagneticLoss', imgSrc: '/mudash2.svg', altText: 'Mu Dash 2 Icon', },
   ];
   const ExponentialCell = ({ mantissa, exponent }) => (
     <LabelCell>
@@ -318,15 +318,16 @@ export const BoxMedium = ({ medium, selectedIndex, setSelectedIndex, setShowWind
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>媒質</CustomH3>
+                <CustomH3>Medium</CustomH3>
               </TitleWrapper>
             </FrontHeaderLeft>
-            <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
-              <ButtonSmall onClick={() => clearBitmap()}>媒質をクリア</ButtonSmall>
-            </ButtonSmallWrapper>
-            <Button style={{ marginLeft: "30px" }}>
-              <SpanText onClick={() => setShowWindow("settingMedium")}>媒質を追加</SpanText>
+            <Button style={{marginLeft:"30px"}}>
+              <SpanText onClick={() => setShowWindow("settingMedium")}>Add</SpanText>
             </Button>
+            <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
+              <ButtonSmall onClick={() => clearBitmap()}>Clear</ButtonSmall>
+            </ButtonSmallWrapper>
+
           </FrontHeaderInner>
         </FrontHeader>
 

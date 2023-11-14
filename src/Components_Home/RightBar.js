@@ -2,8 +2,10 @@ import styled from "styled-components";
 import { BoxMedium } from './Box/BoxMedium';
 import { BoxInputWave } from './Box/BoxInputWave';
 import { BoxFeedPoint } from "./Box/BoxFeedPoint";
-import { BoxColorThreshold } from "./Box/BoxColorThreshold";
+import { BoxColorTransition } from "./Box/BoxColorTransition";
 import { BoxDomainGrid } from "./Box/BoxDomainGrid";
+import { BoxFreq } from "./Box/BoxFreq"
+
 const SettingWrapper = styled.div`
   position:relative;
   flex-grow:1;
@@ -11,6 +13,7 @@ const SettingWrapper = styled.div`
   height:calc(100vh - 50px);
   display:flex;
   flex-direction:column;
+  margin-left:4px;
   background-color:rgb(240,240,240);
   user-select: none;  /* 全てのブラウザでテキスト選択を無効にする */
   -webkit-user-select: none;  /* Safari 用 */
@@ -74,7 +77,7 @@ const ButtonDownload = styled.div`
   font-family: Circular,Helvetica,sans-serif;
   font-size:20px;
   font-weight: 500;
-  line-height: 2.0;
+  line-height: 1.8;
   padding:0px 15px;
   border-radius:3px;
   margin:15px 0px 18px 0px;
@@ -127,7 +130,8 @@ flex-direction:row;
 grid-gap:5px;
 margin-bottom:5px;
 `
-export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint, setShowWindow, push, selectedIndex, setSelectedIndex, amplitudeScaler, setAmplitudeScaler, colorThreshold, setColorThreshold, clearBitmap, moveVideo, setMoveVideo, showSimulation, setShowSimulation,reset }) => {
+export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint, setShowWindow, push, selectedIndex, setSelectedIndex, amplitudeScaler, setAmplitudeScaler, clearBitmap, moveVideo, setMoveVideo, showSimulation, setShowSimulation, reset, color, setColor
+}) => {
 
   const MediumBoxProps = {
     medium,
@@ -139,14 +143,17 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
     amplitudeScaler, setAmplitudeScaler,
     setShowWindow
   };
+  const BoxFreq={
+    setting,setSetting
+  }
   const FeedPointBoxProps = {
     setting,
     feedPoint, setFeedPoint
   };
   const ColorThresholdBoxProps = {
-    colorThreshold, setColorThreshold
+    color, setColor
   };
-  const DomainGridBoxProps={
+  const DomainGridBoxProps = {
     setShowWindow
   }
   const StopButton = ({ onClick }) => (
@@ -187,11 +194,12 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
       <ToggleWrapper>
         <ToggleInner>
           <BoxWrapper>
-            <BoxMedium {...MediumBoxProps} clearBitmap={clearBitmap} ></BoxMedium>
-            <BoxInputWave {...InputWaveBoxProps}></BoxInputWave>
+            <BoxInputWave {...InputWaveBoxProps} />
+            <BoxMedium {...MediumBoxProps} clearBitmap={clearBitmap} />
+            
             <BoxFeedPoint {...FeedPointBoxProps} />
-            <BoxColorThreshold {...ColorThresholdBoxProps}></BoxColorThreshold>
-            <BoxDomainGrid {...DomainGridBoxProps}></BoxDomainGrid>
+            <BoxColorTransition {...ColorThresholdBoxProps} />
+            <BoxDomainGrid {...DomainGridBoxProps} />
           </BoxWrapper>
           <Spacer />
           <ButtonContainer>
@@ -201,8 +209,8 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
                 <PlayPauseButton moveVideo={moveVideo} setMoveVideo={setMoveVideo} />
               </FlexSer>
             )}
-            <ButtonDownload onClick={push}>シミュレーション実行</ButtonDownload>
-            <ButtonDownload onClick={reset} style={{lineHeight:"1.5"}}>初期化</ButtonDownload>
+            <ButtonDownload onClick={push}>Simulate</ButtonDownload>
+            <ButtonDownload onClick={reset}>Reset</ButtonDownload>
           </ButtonContainer>
         </ToggleInner>
       </ToggleWrapper>

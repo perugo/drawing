@@ -281,67 +281,49 @@ const SectionContainer = styled.div`
   border-radius: 5px;
   margin-bottom: 7px; // Space between sections
 `;
-export const BoxSetting = ({
-  amplitudeScaler, setAmplitudeScaler,
-  defaultAmplitudeScaler,
+export const BoxFreq = ({
+  setting, setSetting,
+  defaultSetting,
   setShowWindow }) => {
 
-  const [strAmplitudeScaler, setStrAmplitudeScaler] = useState({});
+  const [strFreq, setStrFreq] = useState('');
   const timeoutIdRef = useRef();
 
   useEffect(() => {
-    if (amplitudeScaler.Select===undefined) return;
-    updateStringStates(amplitudeScaler,setStrAmplitudeScaler);
-  }, [amplitudeScaler])
+    if (setting.freq === undefined) return;
+    setStrFreq(setting.freq);
+  }, [setting])
 
   const handleInputChange = (type, field) => (e) => {
     const value = e.target.value;
 
     if (!validateInput(type, value)) return;
     clearTimeout(timeoutIdRef.current);
-
-    setStrAmplitudeScaler((prevState) => ({
-      ...prevState,
-      [field]: value
-    }));
+    setStrFreq(value);
 
     startSetInputTimer();
   };
   const onClick_setToDefault = () => {
-    setToDefault(defaultAmplitudeScaler,setStrAmplitudeScaler);
-    setAmplitudeScaler(defaultAmplitudeScaler);
+    setToDefault(defaultSetting,  setStrFreq);
+    setStrFreq({...defaultSetting});
+    setSetting({ ...setting, freq: defaultSetting.freq });
   }
 
   const startSetInputTimer = () => {
     timeoutIdRef.current = setTimeout(handleSetInputTimeout, 1600);
   };
   const handleSetInputTimeout = () => {
-    setStrAmplitudeScaler((current) => {
-      let updated = {
-        simulationNum: isValidNumber(current.simulationNum) ? parseInt(current.simulationNum) : amplitudeScaler.simulationNum,
-        Select: amplitudeScaler.Select,
-        Rise: {
-          slope: isValidNumber(current.slope) ? roundToFourSignificantFigures(current.slope) : amplitudeScaler.Rise.slope,
-          shift: isValidNumber(current.shift) ? roundToFourSignificantFigures(current.shift) : amplitudeScaler.Rise.shift
-        },
-        Pulse: {
-          peakPosition: isValidNumber(current.peakPosition) ? roundToFourSignificantFigures(current.peakPosition) : amplitudeScaler.Pulse.peakPosition,
-          widthFactor: isValidNumber(current.widthFactor) ? roundToFourSignificantFigures(current.widthFactor) : amplitudeScaler.Pulse.widthFactor
-        }
-      }
-      setAmplitudeScaler(updated); // ここで新しい状態をセット
+    setStrFreq((currentStrFreq) => {
+      const newFreq = isValidNumber(currentStrFreq) ? roundToFourSignificantFigures(currentStrFreq) : setting.freq;
+      setSetting((currentSetting) => ({
+        ...currentSetting,
+        freq: newFreq,
+      }));
     });
-
   };
 
   const inputFields = [
-    { name: "Maximum Number of Simulations : ", field: 'simulationNum', type: 'integer' },
-    { name: "Sine Wave Settings", field: 'text' },
-    { name: "slope : ", field: 'slope', type: 'signedDecimal' },
-    { name: "shift : ", field: 'shift', type: 'decimal' },
-    { name: "Gaussian Pulse Settings", field: 'text' },
-    { name: "peakPosition : ", field: 'peakPosition', type: 'decimal' },
-    { name: "widthFactor : ", field: 'widthFactor', type: 'decimal' } // lambda is handled separately
+    { name: "frequency[m] : ", field: 'freq', type: 'decimal' },
   ];
   return (
     <BoxWrapper>
@@ -350,7 +332,7 @@ export const BoxSetting = ({
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>WaveShape</CustomH3>
+                <CustomH3>Frequency</CustomH3>
               </TitleWrapper>
               <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
                 <ButtonSmall onClick={() => onClick_setToDefault()}>Reset</ButtonSmall>
@@ -364,7 +346,7 @@ export const BoxSetting = ({
             <GridColumn>
               <InputItemGrid>
               </InputItemGrid>
-              {strAmplitudeScaler !== undefined && strAmplitudeScaler.slope !== undefined && (
+              {strFreq !== undefined && (
                 <InputItemGrid>
                   {inputFields.map(({ name, field, type }, index) => {
                     if (field === 'text') {
@@ -381,7 +363,7 @@ export const BoxSetting = ({
                           key={field}
                           maxLength="12"
                           type="text"
-                          value={ strAmplitudeScaler[field]}
+                          value={strFreq}
                           onChange={handleInputChange(type, field)}
                           onKeyDown={handleKeyDown(type)}
                         />

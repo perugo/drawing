@@ -117,13 +117,12 @@ const ColumnLayout = styled.div`
   direction:1tr;
   text-align:left;
   font-size:18px;
-  line-height:20px;
   color:#16191f;
   font-weight:500;
   font-family:times new roman,serif;
 `
 const GridColumn = styled.div`
-  padding:10px 10px 5px 10px;
+  padding:5px 20px 5px 20px;
   box-sizing:border-box;
   display:flex;
   position:relative;
@@ -176,8 +175,10 @@ display:flex;
 flex-direction:row;
 `
 const SliderWrapper = styled.div`
-padding:4px 0px 5px 0px;
-margin-bottom:20px;
+padding:0px;
+padding-bottom:2px;
+line-height:20px;
+cursor:grab;
 `
 const Label = styled.div`
   margin-left:5px;
@@ -189,42 +190,83 @@ const RadioButton = styled.label`
   display:flex;
   position:relative;
 `
+const TextRow = styled.div`
+display:flex;
+flex-direction:row;
+align-items:center;
+`
+const Text = styled.div`
+font-size:18px;
+margin:0;
+padding:0;
+`
+const FreeSpaceTextWrapper = styled.div`
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100%;
+  margin-left:auto;
+  font-size:12px;
+`
+//  align-item:center;
+const FreeSpaceText=styled.div`
+justify-content:center;
+
+`
 export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler, setShowWindow }) => {
   const timeoutIdRef = useRef();
-  const [dispLambda, setDispLambda] = useState(0);//rc-sliderが少数点の値を扱えないため、d*100したもの
+  const reserveIdRef = useRef(null);
+  const [dispFreq, setDispFreq] = useState(setting.feq);//rc-sliderが少数点の値を扱えないため、d*100したもの
   const [marks, setMarks] = useState({});
-  const [lambdaMax, setLambdaMax] = useState(0);
-  const [lambdaMin, setLambdaMin] = useState(0);
+  const [freqMax, setFreqMax] = useState(0);
+  const [freqMin, setFreqMin] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const prevSettingRef = useRef(null);
   useEffect(() => {
-    const { fieldX, split, lambda } = setting;
-    if (lambda === undefined) return;
-    setDispLambda(lambda);
-    const initialMarks = calculateMarks(fieldX, split,setLambdaMin,setLambdaMax);
-    setMarks(initialMarks);
+    if (!checker_SETTING(setting)) return;
+    if (checker_NOCHANGE(setting, prevSettingRef.current)) return;
+    if (compare_ONLYFREQCHANGE(setting, prevSettingRef.current)) {
+      const { freq } = setting;
+      setDispFreq(freq);
+    } else {
+      const { fieldX, split, freq: freq } = setting;
+      const initialMarks = calculateMarks(fieldX, split, setFreqMin, setFreqMax);
+      setMarks(initialMarks);
+      setDispFreq(freq);
 
+    }
+    prevSettingRef.current = setting;
     return () => {
-      clearTimeout(timeoutIdRef.current);
+      clearTimeout(reserveIdRef.current);
     };
   }, [setting]);
   useEffect(() => {
-    clearTimeout(timeoutIdRef.current);
-    startTimer();
-  }, [dispLambda])
+    if (reserveIdRef.current) {
+      clearTimeout(reserveIdRef.current);
+    }
+    reserveIdRef.current = setTimeout(() => {
+      setSetting({ ...setting, freq: dispFreq });
+      reserveIdRef.current = null;
+    }, 600);
+
+    if (timeoutIdRef.current) return;
+    setSetting({ ...setting, freq: dispFreq });
+    timeoutIdRef.current = setTimeout(() => {
+      timeoutIdRef.current = null;
+    }, 100);
+
+    return () => {
+      if (reserveIdRef.current) {
+        clearTimeout(reserveIdRef.current)
+      }
+    };
+  }, [dispFreq])
   useEffect(() => {
     if (amplitudeScaler.Select === "Rise") setSelectedIndex(0);
     if (amplitudeScaler.Select === "Pulse") setSelectedIndex(1);
   }, [amplitudeScaler])
   const handleSliderChanged = (newValue) => {
-    setDispLambda(newValue);
-  };
-
-  const handleTimeout = () => {
-    setSetting({ ...setting, lambda: dispLambda});
-  };
-
-  const startTimer = () => {
-    timeoutIdRef.current = setTimeout(handleTimeout, 300);
+    setDispFreq(newValue);
   };
 
   const changeObjectIndex = (index) => {
@@ -240,9 +282,9 @@ export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitud
               <FrontHeaderInner>
                 <FrontHeaderLeft>
                   <TitleWrapper>
-                    <CustomH3 style={{ margin: 0 }}>波長と波形の選択</CustomH3>
+                    <CustomH3 style={{ margin: 0 }}>Frequency and WaveForm</CustomH3>
                   </TitleWrapper>
-                  <Button><SpanText onClick={() => { setShowWindow("settingInputWave") }}>カスタム設定</SpanText></Button>
+                  <Button><SpanText onClick={() => { setShowWindow("settingInputWave") }}>Setting</SpanText></Button>
                 </FrontHeaderLeft>
               </FrontHeaderInner>
             </FrontHeader>
@@ -250,15 +292,16 @@ export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitud
             <FrontBody>
               <ColumnLayout>
                 <GridColumn>
-
-                  <ColumnTitle style={{ fontFamily: "serif" }}>
-                    波長[λ] : {getStrLambda(dispLambda)}
-                  </ColumnTitle>
+                  <TextRow>
+                    <Text style={{ fontSize: "13px",paddingBottom:"3px",alignSelf: "flex-end" }}>frequency[Hz]: </Text>
+                    <Text>{getStrFreq(dispFreq, 2)}</Text>
+                    <FreeSpaceTextWrapper><FreeSpaceText>free space WaveLength: {getStrLambda(dispFreq,1)}</FreeSpaceText></FreeSpaceTextWrapper>
+                  </TextRow>
                   <SliderWrapper>
                     <Slider
-                      value={dispLambda}
-                      min={lambdaMin}
-                      max={lambdaMax}
+                      value={dispFreq}
+                      min={freqMin}
+                      max={freqMax}
                       step={null}
                       marks={marks}
                       onChange={handleSliderChanged}
@@ -275,7 +318,7 @@ export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitud
                         readOnly
                       />
                     </RadioButton>
-                    <Label>正弦波</Label>
+                    <Label>Sine Wave</Label>
                   </ContentBodyRow>
                   <ContentBodyRow onClick={() => changeObjectIndex(1)}>
                     <RadioButton>
@@ -285,7 +328,7 @@ export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitud
                         readOnly
                       />
                     </RadioButton>
-                    <Label>ガウスパルス</Label>
+                    <Label>modulated Gaussian</Label>
                   </ContentBodyRow>
                 </GridColumn>
               </ColumnLayout>
@@ -296,6 +339,32 @@ export const BoxInputWave = ({ setting, setSetting, amplitudeScaler, setAmplitud
     </div>
   )
 };
+//  SETTING: { fieldX: 0.048, fieldY: 0.036, split: 200, lambda: 0.0042 },
+const freeSpaceLambda=(value)=>{
+
+}
+function checker_SETTING(obj) {
+  if (!obj) return false;
+  const requiredFields = {
+    fieldX: (data) => typeof data === 'number',
+    fieldY: (data) => typeof data === 'number',
+    split: (data) => typeof data === 'number',
+    freq: (data) => typeof data === 'number',
+  }
+  return Object.keys(requiredFields).every(key => requiredFields[key](obj[key]));
+}
+function checker_NOCHANGE(obj1, obj2) {
+  if (!obj1 || !obj2) return false;
+  const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
+  if (fieldsMatch(obj1, obj2, settingFields)) return true;
+  return false;
+}
+function compare_ONLYFREQCHANGE(obj1, obj2) {
+  if (!obj1 || !obj2) return false;
+  const samesettingFields = ['fieldX', 'fieldY', 'split'];
+  if (!fieldsMatch(obj1, obj2, samesettingFields)) return false;
+  return obj1.freq !== obj2.freq;
+}
 function roundToFourSignificantFigures(num) {
   if (num === 0) {
     return 0; // 0は特別に扱う
@@ -306,41 +375,85 @@ function roundToFourSignificantFigures(num) {
   let shifted = Math.round(num * magnitude);
   return shifted / magnitude;
 }
-const calculateMarks = (fieldX, split,setLambdaMin,setLambdaMax) => {
+const calculateMarks = (fieldX, split, setFreqMin, setFreqMax) => {
   const initialMarks = {};
   const minlambdaOverDx = 10;
   const maxlambdaOverDx = 40;
   const numSliderSteps = 20;
-  let start = roundToFourSignificantFigures(minlambdaOverDx * fieldX / split);
-  let end = roundToFourSignificantFigures(maxlambdaOverDx * fieldX / split);
-  let increment = roundToFourSignificantFigures(((maxlambdaOverDx - minlambdaOverDx) * fieldX / split) / numSliderSteps);
+
+  const freqStart = 3e8 / (minlambdaOverDx * fieldX / split);
+  let start = roundToFourSignificantFigures(freqStart);
+  const freqEnd = 3e8 / (maxlambdaOverDx * fieldX / split);
+  let end = roundToFourSignificantFigures(freqEnd);
+  const freqIncrement = (freqStart - freqEnd) / numSliderSteps;
+  let increment = roundToFourSignificantFigures(freqIncrement);
   let i;
-  for (i = start; i <= end; i = roundToFourSignificantFigures(i + increment)) {
+  let index = 0;
+
+  //console.log("start: " + start / 1e9 + "  end: " + end / 1e9 + " increment: " + increment / 1e9);
+  for (i = end; i <= start; i = roundToFourSignificantFigures(i + increment)) {
     // 繰り返し処理の中でiを有効数字4桁に丸め、それをキーとして使用
-    initialMarks[i] = ' ';
+    //console.log("i:" + i / 1e9);
+    if (index % 5 === 0) {
+      initialMarks[i] = getStrFreq(i, 1);
+    } else {
+      initialMarks[i] = ' ';
+    }
+    index += 1;
+
   }
-  setLambdaMin(roundToFourSignificantFigures(start));
-  setLambdaMax(i-2*increment);
+  setFreqMin(roundToFourSignificantFigures(end));
+  setFreqMax(i - increment);
+
   return initialMarks;
 };
+function fieldsMatch(obj1, obj2, fields) {
+  return fields.every(field => obj1[field] === obj2[field]);
+}
 
-const getStrLambda = (lambdaValue) => {
-  let value;let unit;
-  if (lambdaValue > 1) {
-    value = lambdaValue.toFixed(2);
-    unit = 'm';
-  } else if (lambdaValue > 0.001) {
-    value = (lambdaValue * 1000).toFixed(2);
-    unit = 'mm';
-  } else if (lambdaValue > 0.000001) {
-    value = (lambdaValue * 1000000).toFixed(2);
-    unit = 'µm';
-  } else if (lambdaValue > 0.000000001) {
-    value = (lambdaValue * 1000000000).toFixed(2);
-    unit = 'nm';
-  } else {
-    value = (lambdaValue * 1000000000).toFixed(2);
-    unit = 'nm';
+const getStrFreq = (freqValue, fixed) => {
+  let value; let unit;
+  if (freqValue < 1e3) {
+    value = freqValue.toFixed(fixed);
+    unit = 'Hz';
+  } else if (freqValue < 1e6) {
+    value = (freqValue * 1e-3).toFixed(fixed);
+    unit = 'kHz';
+  } else if (freqValue < 1e9) {
+    value = (freqValue * 1e-6).toFixed(fixed);
+    unit = 'MHz';
+  } else if (freqValue < 1e12) {
+    value = (freqValue * 1e-9).toFixed(fixed);
+    unit = 'GHz';
+  } else if (freqValue < 1e15) {
+    value = (freqValue * 1e-12).toFixed(fixed);
+    unit = 'THz';
   }
-  return value+" "+unit;
+  return value + " " + unit;
+};
+const getStrLambda = (freqValue, fixed) => {
+
+  let value; let unit;
+  let lambda=3e8/freqValue;
+
+  if (lambda > 1) {
+    value = lambda.toFixed(fixed);
+    unit = 'm';
+  } else if (lambda > 1e-3) {
+    value = (lambda * 1e3).toFixed(fixed);
+    unit = 'mm';
+  } else if (lambda < 1e-6) {
+    value = (lambda * 1e6).toFixed(fixed);
+    unit = 'um';
+  } else if (lambda < 1e9) {
+    value = (lambda * 1e-9).toFixed(fixed);
+    unit = 'pm';
+  } else if (lambda < 1e12) {
+    value = (lambda * 1e-12).toFixed(fixed);
+    unit = 'fm';
+  }else{
+    value = lambda.toFixed(fixed);
+    unit = 'm';
+  }
+  return value + " " + unit;
 };

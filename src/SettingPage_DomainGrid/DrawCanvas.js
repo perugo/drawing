@@ -73,15 +73,15 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
   useEffect(() => {
     if (!checker_DRAWDATA(drawData) || width === 0 || originalDrawDataRef.current===null)return;
     if (checker_NOCHANGE(drawData, prevDrawDataRef.current) && compare_RectNOCHANGE(prevRect, width, height)) {
-      console.log("no change");
+      console.log("DOMAIN : no change");
       return;
     } else if (compare_ONLYLAMBDACHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
-      console.log("only lambda");
+      console.log("DOMAIN : only lambda");
       lambda = drawData.setting.lambda;
       draw_canvas();
     }
     else {
-      console.log("everythin else");
+      console.log("DOMAIN : everythin else");
       setUpdateCounter(c => c + 1);
       let setting = drawData.setting;
       lambda = setting.lambda;
@@ -92,8 +92,6 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
       fieldY = ynum * dx;
       canvasDx = width / xnum;
       canvasDy = canvasDx;
-      console.log("!!!!!!!!");
-      console.log(originalDrawDataRef.current.setting);
       feedPoint = maker_FEEDPOINT(drawData.feedPoint, xnum, ynum,originalDrawDataRef.current.setting,drawData.setting);
       bitmap = maker_BITMAP(drawData.bitmap, xnum, ynum,originalDrawDataRef.current.setting,drawData.setting);
       medium = drawData.medium;
@@ -105,7 +103,7 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
       const ctx1 = canvas1.getContext("2d");
       line_triangle(0, 0, 0, height, 10,ctx1,getStrLambda(fieldY));
       line_triangle(0, height, width, height, 12,ctx1, getStrLambda(fieldX));
-      sentence(20, width, height - 20 * 3,ctx1, `x軸の分解精度 ${xnum}`);
+      sentence(20, width, height - 20 * 3,ctx1, `X-Axis Resolution ${xnum}`);
     }
     prevDrawDataRef.current = drawData;
     prevRect.current = { width: width, height: height };

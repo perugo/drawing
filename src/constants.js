@@ -3,31 +3,35 @@ export const DEFAULT = {
     { "DielectricConstant": 1, "DielectricLoss": 0, "MagneticConstant": 1, "MagneticLoss": 0 },
     { "DielectricConstant": 1, "DielectricLoss": 100000000, "MagneticConstant": 1, "MagneticLoss": 0 }
   ],
-  SETTING: { fieldX: 0.048, fieldY: 0.036, split: 200, lambda: 0.00408 },
+  SETTING: { fieldX: 0.048, fieldY: 0.036, split: 200, freq: 7.14e9 },
   BITMAP:[],
   FEEDPOINT: [{ x: 0, y: 0, color: 'rgb(255, 0, 0)', phase: 0 }],
-  COLORTHRESHOLD:0.085,
+  COLORTHRESHOLD:0.08,
   AMPLITUDESCALER: {
     "Select": "Rise", "simulationNum": 700,
-    "Rise": { "slope": -0.03, "shift": 100 },
+    "Rise": { "slope": -0.08, "shift": 70 },
     "Pulse": { "peakPosition": 100, "widthFactor": 2.5 }
+  },
+  COLOR:{
+    colorThreshold:0.08,
+    colorTransitionIndex:0
   }
 }
 
 export const BREAD = {
-  HOME: [{ title: "FDTDシュミレーション", link: "home" }],
+  HOME: [{ title: "FDTDsimulation", link: "home" }],
   SETTING: {
     MEDIUM: [
-      { title: "FDTDシュミレーション", link: "home" },
-      { title: "媒質の追加", link: "settingMedium" }
+      { title: "FDTDsimulation", link: "home" },
+      { title: "Add medium", link: "settingMedium" }
     ],
     DOMAINGRID: [
-      { title: "FDTDシュミレーション", link: "home" },
-      { title: "解析領域の設定", link: "settingDomainGrid" }
+      { title: "FDTDsimulation", link: "home" },
+      { title: "Configure Analysis Area", link: "settingDomainGrid" }
     ],
     INPUTWAVE: [
-      { title: "FDTDシュミレーション", link: "home" },
-      { title: "入力波カスタム設定", link: "settingInputWave" }
+      { title: "FDTDsimulation", link: "home" },
+      { title: "Input Wave Custom Setting", link: "settingInputWave" }
     ]
   }
 }

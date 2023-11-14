@@ -1,6 +1,17 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef } from 'react';
 import 'rc-slider/assets/index.css';
+
+const FEEDPOINT_COLOR = [
+  'rgb(255, 0, 0)',   // Lighter 赤色 (Red)
+  'rgb(100, 255, 255)',   // Lighter シアン (Cyan)
+  'rgb(255, 100, 255)',   // Lighter マゼンタ (Magenta)
+  'rgb(200, 100, 200)',   // Lighter 紫色 (Purple)
+  'rgb(255, 200, 100)',   // Lighter オレンジ色 (Orange)
+  'rgb(200, 200, 100)',   // Lighter オリーブ色 (Olive)
+  'rgb(100, 200, 200)',   // Lighter ティール色 (Teal)
+  'rgb(200, 100, 100)'    // Lighter 濃紅色 (Deep Red)
+];
 const MainContentWrapper = styled.div`
 `
 const Content = styled.div`
@@ -53,10 +64,7 @@ overflow: hidden;
     box-shadow:0 1px 1px 0 rgba(0,28,36,0,3) 1px 1px 1px 1px 0 rgba(0,28,36,0.15), -1px 1px 1px 0 rgba(0,28,36,0.15);
     mix-blend-mode:multiply;
   }
-
 `
-
-
 
 const FrontHeader = styled.div`
   border-bottom:1px solid #eaeded;
@@ -99,16 +107,6 @@ position:relative;
 padding:10px 10px 12px 10px;
 
 `
-const FrontBodyInner = styled.div`
-position:relative;
-  cursor:pointer;
-  display:flex;
-  padding: 12px 20px 12px 20px;
-  border:none;
-  line-height:22px;
-  text-align:left;
-  background-color:#ddd;
-`
 
 const ColumnLayout = styled.div`
   margin:-10px;
@@ -137,15 +135,7 @@ const GridColumn = styled.div`
   position:relative;
   flex-direction:column;
 `
-const ColumnTitle = styled.div`
-  font-size:16px;
-  font-weight:500;
-  line-height:1.2;
-  color:rgb(100,100,100);
-  margin-bottom:2px;
-  font-family:times new roman,serif;
-  font-family:"times new roman", serif;
-`
+
 //,"Helvetica Neue",Roboto,Arial,sans-serif
 const SpanText = styled.span`
 font-size:15px;
@@ -153,9 +143,6 @@ font-weight:500;
 line-height:22px;
 color:rgb(40,40,40);
 margin-bottom:2px;
-`
-const ButtonWrapperRight = styled.div`
-display: flex;
 `
 const Button = styled.button`
 background-color:rgb(255,255,255);
@@ -176,36 +163,39 @@ justify-content:center;
 }
 cursor:pointer;
 `
+const ShiftButtonWrapper = styled.div`
+background-color:rgb(230,230,230);
+border-color:rgb(100,100,100);
+border-style:solid;
+border-width:1px;
+display:flex;
+justify-content:center;
+&:hover {
+  border-color:rgb(100,100,100);
+  background-color:rgb(205,205,205);
+}
+&:active{
+  background-color:rgb(170,170,170);
+}
+cursor:pointer;
+`
 const MediumColorIcon = styled.div`
-  width:20px;
-  height:18px;
+  width:22px;
+  height:20px;
   margin:2px 3px 1px 3px;
   border:1px solid black;
 `
-const ContentBodyRow = styled.div`
-  margin-bottom:7px;
-  position:relative;
-  display: inline-block;
-  display:flex;
-`
+
 const FrontHeaderLeft = styled.div`
 line-height:none;
 display:flex;
 flex-direction:row;
 `
-const SliderWrapper = styled.div`
-padding:10px 0px 10px 0px;
-margin-bottom:20px;
-`
 const Label = styled.div`
   margin-left:15px;
+  padding-right:5px;
   text-align:left;
   font-size:18px;
-`
-const RadioButton = styled.label`
-  font-size: 15px;
-  display:flex;
-  position:relative;
 `
 const FeedPointGridArray = styled.div`
   display: grid;
@@ -216,12 +206,18 @@ const FeedPointGridArray = styled.div`
 const FeedPointItem = styled.div`
   display:flex;
   flex-direction:row;
+  line-height:24px;
 `
 const SVGWrapper = styled.div`
   height: 20px;
   width: 26px;
   margin-top: 2px;
   margin-bottom: 2px;
+  display: flex;
+`;
+const CoordinateShiftSVGWrapper = styled.div`
+  height: 12px;
+  width: 20px;
   display: flex;
 `;
 const SVGInner = styled.div`
@@ -238,38 +234,6 @@ const StyledImg = styled.img`
   height: 100%;
   z-index: 2; // Ensure the image is always on top
 `;
-const ButtonDownloadWrapper = styled.div`
-text-align: center;
-`
-const ButtonDownload = styled.div`
-backface-visibility: hidden;
-background-color:rgb(255,153,0);
-border: 0;
-box-sizing: border-box;
-color:rgb(0,0,0);
-cursor: pointer;
-display: inline-block;
-font-family: Circular,Helvetica,sans-serif;
-font-weight: 500;
-line-height: 1.6;
-padding:0px 15px;
-border-radius:3px;
-margin:0px 0px 0px 0px;
-position: relative;
-text-align: left;
-text-decoration: none;
-transition: transform .2s;
-user-select: none;
--webkit-user-select: none;
-touch-action: manipulation;
-
-&:hover{
-  background-color:rgb(236,114,17);
-}
-&:active{
-  background-color:#EB5F07;
-}
-`
 const InputText = styled.input`
   width:50px;
   text-align:right;
@@ -292,22 +256,26 @@ align-items: center;      // Add this line to center vertically (optional if you
 width: 100%;              // This ensures it takes full width available
 `;
 
-const FEEDPOINT_COLOR = [
-  'rgb(255, 0, 0)',   // Lighter 赤色 (Red)
-  'rgb(100, 255, 255)',   // Lighter シアン (Cyan)
-  'rgb(255, 100, 255)',   // Lighter マゼンタ (Magenta)
-  'rgb(200, 100, 200)',   // Lighter 紫色 (Purple)
-  'rgb(255, 200, 100)',   // Lighter オレンジ色 (Orange)
-  'rgb(200, 200, 100)',   // Lighter オリーブ色 (Olive)
-  'rgb(100, 200, 200)',   // Lighter ティール色 (Teal)
-  'rgb(200, 100, 100)'    // Lighter 濃紅色 (Deep Red)
-];
+const CoordinateShiftButtonWrapper = styled.div`
+padding-left:3px;
+height:100%;
+width:20px;
+display:flex;
+flex-direction:column;
+`
+
+
 var xnum;
 var ynum;
 export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
   const [strFeedPoint, setStrFeedPoint] = useState([]);
   const [hoveredItemId, setHoveredItemId] = useState(-1);
   const timeoutIdRef = useRef();
+  const looptimeoutIdRef = useRef(null);
+  const reserveIdRef = useRef(null);
+
+  const [pressTimer, setPressTimer] = useState(null);
+  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
     if (!feedPoint || feedPoint.length === 0) return;
@@ -318,7 +286,6 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
       phase: item.phase.toString()
     }));
     setStrFeedPoint(stringFeedPoint);
-    //console.log(feedPoint);
   }, [feedPoint])
 
   useEffect(() => {
@@ -363,7 +330,7 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
     setFeedPoint(finalFeedPoint);
   };
   const startSetFeedPointTimer = () => {
-    timeoutIdRef.current = setTimeout(handleSetFeedPointTimeout, 1500);
+    timeoutIdRef.current = setTimeout(handleSetFeedPointTimeout, 1200);
   };
 
   const handleKeyDown = (e) => {
@@ -386,6 +353,97 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
     const newFeedPoint = generateAlignedFeedPoints(feedPoint, xnum, ynum);
     setFeedPoint(newFeedPoint); // Update the state with the new feed points
   }
+  const onClickShiftButton = (columnIndex, field, shift) => {
+    const newStrFeedPoint = [...strFeedPoint];
+    let value = parseInt(newStrFeedPoint[columnIndex][field]);
+    value += shift;
+    newStrFeedPoint[columnIndex][field] = value.toString();
+    setStrFeedPoint(newStrFeedPoint);
+
+    if (reserveIdRef.current) {
+      clearTimeout(reserveIdRef.current);
+    }
+    reserveIdRef.current = setTimeout(() => {
+      handleSetFeedPointTimeout();
+      reserveIdRef.current = null;
+    }, 600);
+
+    if (looptimeoutIdRef.current) return;
+    handleSetFeedPointTimeout();
+    looptimeoutIdRef.current = setTimeout(() => {
+      looptimeoutIdRef.current = null;
+    }, 200);
+
+    return () => {
+      if (reserveIdRef.current) {
+        clearTimeout(reserveIdRef.current)
+      }
+    };
+  }
+  const handleMouseDown = (index, field, shiftDir) => {
+    let shift;
+    if (shiftDir === 'increment') {
+      shift = 1;
+    } else { shift = -1; }
+    onClickShiftButton(index, field, shift); // すぐにonClickを実行
+
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        if (field === 'phase') {
+          if (shiftDir === 'increment') { shift = 4; } else { shift = -4; }
+        }
+        onClickShiftButton(index, field, shift);
+      }, 100);
+      setIntervalId(interval);
+    }, 1000);
+    setPressTimer(timer);
+  }
+  const handleMouseUp = () => {
+    clearTimeout(pressTimer);
+    clearInterval(intervalId);
+    setPressTimer(null);
+    setIntervalId(null);
+  }
+  useEffect(() => {
+    // コンポーネントのアンマウント時にタイマーをクリア
+    return () => {
+      clearTimeout(pressTimer);
+      clearInterval(intervalId);
+    };
+  }, [pressTimer, intervalId]);
+
+  const CoordinateShiftButton = ({ index, coordinateType, handleMouseDown, handleMouseUp }) => {
+    return (
+      <CoordinateShiftButtonWrapper>
+        <ShiftButtonWrapper style={{ borderBottom: 'none' }}
+          onMouseDown={() => handleMouseDown(index, coordinateType, 'increment')}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}>
+          <CoordinateShiftSVGWrapper>
+            <SVGInner>
+              <StyledImg
+                src={`${process.env.PUBLIC_URL}/IncrementButton.svg`}
+                alt="Increment"
+              />
+            </SVGInner>
+          </CoordinateShiftSVGWrapper>
+        </ShiftButtonWrapper>
+        <ShiftButtonWrapper
+          onMouseDown={() => handleMouseDown(index, coordinateType, 'decrement')}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}>
+          <CoordinateShiftSVGWrapper>
+            <SVGInner>
+              <StyledImg
+                src={`${process.env.PUBLIC_URL}/DecrementButton.svg`}
+                alt="Decrement"
+              />
+            </SVGInner>
+          </CoordinateShiftSVGWrapper>
+        </ShiftButtonWrapper>
+      </CoordinateShiftButtonWrapper>
+    );
+  };
   return (
     <div>
       <MainContentWrapper>
@@ -395,7 +453,7 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
               <FrontHeaderInner>
                 <FrontHeaderLeft>
                   <TitleWrapper>
-                    <CustomH3>波源の追加</CustomH3>
+                    <CustomH3>Adding Wave Sources</CustomH3>
                   </TitleWrapper>
                 </FrontHeaderLeft>
               </FrontHeaderInner>
@@ -429,7 +487,7 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
                         )}
 
                         <MediumColorIcon style={{ backgroundColor: column.color }}></MediumColorIcon>
-                        <Label>x : </Label>
+                        <Label>x: </Label>
                         <InputText
                           tabIndex={(0) + index + 1} // Set tabIndex based on the index
                           maxLength="3"
@@ -440,7 +498,13 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
                             handleKeyDown(e);
                           }}
                         />
-                        <Label>y : </Label>
+                        <CoordinateShiftButton
+                          index={index}
+                          coordinateType="x"
+                          handleMouseDown={handleMouseDown}
+                          handleMouseUp={handleMouseUp}
+                        />
+                        <Label>y: </Label>
                         <InputText
                           tabIndex={strFeedPoint.length + index + 1} // Set tabIndex based on the index
                           maxLength="3"
@@ -451,7 +515,13 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
                             handleKeyDown(e);
                           }}
                         />
-                        <Label style={{ paddingTop: "2px" }}>θ[deg] : </Label>
+                        <CoordinateShiftButton
+                          index={index}
+                          coordinateType="y"
+                          handleMouseDown={handleMouseDown}
+                          handleMouseUp={handleMouseUp}
+                        />
+                        <Label style={{ paddingTop: "2px" }}>θ[deg]: </Label>
                         <InputText
                           tabIndex={(strFeedPoint.length * 2) + index + 1} // Set tabIndex based on the index
                           maxLength="3"
@@ -462,21 +532,27 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
                             handleKeyDown(e);
                           }}
                         />
+                        <CoordinateShiftButton
+                          index={index}
+                          coordinateType="phase"
+                          handleMouseDown={handleMouseDown}
+                          handleMouseUp={handleMouseUp}
+                        />
                       </FeedPointItem>
                     )))}
                     <FeedButtonItem>
 
                       {strFeedPoint.length !== 8 && (
                         <Button onClick={addFeedPoint}>
-                          <SpanText >波源の追加</SpanText>
+                          <SpanText >Add</SpanText>
                         </Button>
                       )}
                       {strFeedPoint.length >= 3 && (
                         <Button style={{ marginLeft: "10px" }} onClick={() => onClickFormLine()}>
+                          <SpanText>Align with </SpanText>
                           <MediumColorIcon style={{ backgroundColor: "red" }} />
-                          <SpanText>と</SpanText>
+                          <SpanText> and </SpanText>
                           <MediumColorIcon style={{ backgroundColor: strFeedPoint[1].color }}></MediumColorIcon>
-                          <SpanText >のように整列する</SpanText>
                         </Button>
                       )}
                     </FeedButtonItem>
@@ -501,7 +577,7 @@ function generateAlignedFeedPoints(feedPoints, xnum, ynum) {
   const [firstPoint, secondPoint] = feedPoints;
   const deltaX = secondPoint.x - firstPoint.x;
   const deltaY = secondPoint.y - firstPoint.y;
-  const deltaPhase=secondPoint.phase-firstPoint.phase;
+  const deltaPhase = secondPoint.phase - firstPoint.phase;
 
   return feedPoints.map((point, index) => {
     if (index < 2) {
@@ -515,12 +591,12 @@ function generateAlignedFeedPoints(feedPoints, xnum, ynum) {
       // Calculate new x and y, and clamp them within the valid range
       const newX = clamp(firstPoint.x + deltaX * (index), 0, xnum - 1);
       const newY = clamp(firstPoint.y + deltaY * (index), 0, ynum - 1);
-      const newPhase=(firstPoint.phase+deltaPhase*index)%360;
+      const newPhase = (firstPoint.phase + deltaPhase * index) % 360;
       return {
         ...point,
         x: newX,
         y: newY,
-        phase:newPhase
+        phase: newPhase
       };
     }
   });

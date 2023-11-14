@@ -293,7 +293,6 @@ export const BoxDomain = ({
   draftDrawData, setDraftDrawData,
   drawData
 }) => {
-
   const [strField, setStrField] = useState({});
   const timeoutIdRef = useRef();
 
@@ -337,8 +336,8 @@ export const BoxDomain = ({
   };
 
   const inputFields = [
-    { name: "x軸の幅[m] : ", field: 'fieldX' },
-    { name: "y軸の幅[m] : ", field: 'fieldY' }
+    { name: "Width of X-Axis[m]: ", field: 'fieldX' },
+    { name: "Height of Y-Axis[m]: ", field: 'fieldY' }
   ];
   return (
     <BoxWrapper>
@@ -347,10 +346,10 @@ export const BoxDomain = ({
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>横幅・縦幅</CustomH3>
+                <CustomH3>Width・Height</CustomH3>
               </TitleWrapper>
               <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
-                <ButtonSmall onClick={() => onClick_setToDefault()}>戻す</ButtonSmall>
+                <ButtonSmall onClick={() => onClick_setToDefault()}>go back</ButtonSmall>
               </ButtonSmallWrapper>
             </FrontHeaderLeft>
           </FrontHeaderInner>

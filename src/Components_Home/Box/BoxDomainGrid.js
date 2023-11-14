@@ -232,9 +232,9 @@ export const BoxDomainGrid = ({ setShowWindow }) => {
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>解析領域</CustomH3>
+                <CustomH3>Analysis Area</CustomH3>
               </TitleWrapper>
-              <Button><SpanText onClick={() => { setShowWindow("settingDomainGrid") }}>解析領域の設定</SpanText></Button>
+              <Button><SpanText onClick={() => { setShowWindow("settingDomainGrid") }}>Setting</SpanText></Button>
             </FrontHeaderLeft>
           </FrontHeaderInner>
         </FrontHeader>

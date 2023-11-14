@@ -55,6 +55,7 @@ align-items: center; /* Align text vertically */
 const Textlb = styled.span`
 line-height:inherit;
 font-size:16px;
+font-family:Arial,sans-serif, Helvetica,Circular;
 
 `
 const ItemAnchor = styled.div`

@@ -54,17 +54,21 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
 
   useEffect(() => {
     movevideoRef.current = true;
+    console.log(RECT.width+" ::: "+!checker_FDTDINPUT(FDTD_Input));
     if (!checker_FDTDINPUT(FDTD_Input) || RECT.width === 0) return;
+    console.log("FDTD_INPUT useEffect");
     FDTD2D_PMLRef.current = new FDTD2D_PML(FDTD_Input);
     showSimulationRef.current = true;
+    const {nx:inputNx,ny:inputNy,lpml:inputLpml,color,amplitudeScaler}=FDTD_Input;
+    const {simulationNum}=amplitudeScaler;
+    const {colorThreshold,colorTransitionIndex}=color;
     filmcounter = 0;
-    nx = FDTD_Input.nx;
-    ny = FDTD_Input.ny;
-    lpml = FDTD_Input.lpml;
-    dx = RECT.width / (FDTD_Input.nx - FDTD_Input.lpml * 2);
-    colorCodeRef.current.setM(FDTD_Input.colorThreshold);
-    let amplitudeScaler = FDTD_Input.amplitudeScaler;
-    filmnum = amplitudeScaler.simulationNum / drawcanvasrate;
+    colorCodeRef.current = new ColorCode(colorThreshold,colorTransitionIndex);
+    nx = inputNx;
+    ny = inputNy;
+    lpml = inputLpml;
+    dx = RECT.width / (nx - lpml * 2);
+    filmnum =simulationNum / drawcanvasrate;
     requestAnimationFrame(Program);
     drawbackground(ctxbackgroundRef.current, simulationData.bitmap);
   }, [FDTD_Input]);
@@ -93,9 +97,6 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
     movevideoRef.current = moveVideo;
     requestAnimationFrame(Program);
   }, [moveVideo])
-  useEffect(() => {
-    colorCodeRef.current = new ColorCode();
-  }, [])
 
   const Program = (timestamp) => {
     if (timestamp - lastTimestamp >= interval && filmcounter < filmnum && showSimulationRef.current && movevideoRef.current) {

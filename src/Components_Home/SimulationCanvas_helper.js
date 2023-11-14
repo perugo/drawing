@@ -12,18 +12,15 @@ export const useFDTDInput = (SimulationData) => {
 export function makeFDTDInput(data) {
   let c = 3.0e8;
   let lpml = 20;
-  let setting = data.setting;
+  const { fieldX, fieldY, split, freq } = data.setting;
   let inputbitmap = data.bitmap;
   let feedPoint = data.feedPoint;
   let medium = data.medium;
-  let colorThreshold = data.colorThreshold;
-  let amplitudeScaler = data.amplitudeScaler;
-  let lattice_width = setting.fieldX / setting.split;
-  let nx_pec = Math.floor(setting.split);
-  let ny_pec = Math.ceil(setting.fieldY / lattice_width);
+  let lattice_width = fieldX / split;
+  let nx_pec = Math.floor(split);
+  let ny_pec = Math.ceil(fieldY / lattice_width);
   let nx = nx_pec + 2 * lpml;
   let ny = ny_pec + 2 * lpml;
-  let feq = c / setting.lambda;
   let MediumsClass = [];
   let FeedPointsClass = [];
   let order = 4;
@@ -48,7 +45,7 @@ export function makeFDTDInput(data) {
     minv = c / Math.sqrt(1.0);
   }
   medium.forEach((m) => {
-    MediumsClass.push(makeMedium(m, feq, mint, lattice_width, lpml, order, M));
+    MediumsClass.push(makeMedium(m, freq, mint, lattice_width, lpml, order, M));
   });
   let dt = mint;
   let v = minv;
@@ -67,12 +64,13 @@ export function makeFDTDInput(data) {
     dt: dt,
     v: v,
     order: order,
-    feq: feq,
+    freq: freq,
     FeedPoints: FeedPointsClass,
     Mediums: MediumsClass,
-    colorThreshold: colorThreshold,
-    amplitudeScaler, amplitudeScaler
+    color: data.color,
+    amplitudeScaler: data.amplitudeScaler
   };
+  console.log(obj);
   return obj;
 
   function makeBitmap() {
@@ -85,19 +83,33 @@ export function makeFDTDInput(data) {
     }
     return x;
   }
-  function makeMedium(m, feq, dt, lattice_width, lpml, order, M) {
+  function makeMedium(m, freq, dt, lattice_width, lpml, order, M) {
     let E0 = 8.8541878128e-12;  //真空中の誘電率[F/m]
     let M0 = 1.2566370621e-6; //真空中の透磁率 [H/m]
 
-    let pml_conductivty_max = -((E0 * m.DielectricConstant) / (2.0 * dt)) * (-M) * (order + 1.0) / lpml;
-    let pml_magnetic_max = (M0 * m.MagneticConstant) / (E0 * m.DielectricConstant) * pml_conductivty_max;
-    let Permittivity = m.DielectricConstant * E0;//誘電率
-    let Conductivity = m.DielectricLoss * 2 * Math.PI * feq * E0;//導電率
-    let Permeability = m.MagneticConstant * M0;//透磁率
-    let MagneticConductivity = m.MagneticLoss * 2 * Math.PI * feq * M0;//導磁率
+    const {
+      DielectricConstant, //複素誘電率実部　ε`エプシロンダッシュ
+      DielectricLoss, //複素誘電率虚部　ε``エプシロンダブルダッシュ
+      MagneticConstant, //複素透磁率　μ` ミューダッシュ
+      MagneticLoss //複素透磁率　μ`` ミューダッシュ
+    } = m;
 
-    let ae = (2 * Permittivity - Conductivity * dt) / (2 * Permittivity + Conductivity * dt);
-    let be = ((2 * dt) / (2 * Permittivity + Conductivity * dt)) / lattice_width;
+    let pmlConductivtyMax; //PML層の誘電率の最大値（PML層は解析領域の外側に進むに従い誘電率が大きくなる）
+    let pmlMagneticMax; //PML層の透磁率の最大値（PML層は解析領域の外側に進むに従い透磁率が大きくなる）
+    pmlConductivtyMax = -((E0 * DielectricConstant) / (2.0 * dt)) * (-M) * (order + 1.0) / lpml;
+    pmlMagneticMax = (M0 * MagneticConstant) / (E0 * DielectricConstant) * pmlConductivtyMax;
+
+    let Permittivity; //誘電率 
+    let ElectricConductivity; //導電率
+    let Permeability; //透磁率
+    let MagneticConductivity; //導磁率
+    Permittivity = DielectricConstant * E0;//誘電率
+    ElectricConductivity = DielectricLoss * 2 * Math.PI * freq * E0;//導電率
+    Permeability = MagneticConstant * M0;//透磁率
+    MagneticConductivity = MagneticLoss * 2 * Math.PI * freq * M0;//導磁率
+
+    let ae = (2 * Permittivity - ElectricConductivity * dt) / (2 * Permittivity + ElectricConductivity * dt);
+    let be = ((2 * dt) / (2 * Permittivity + ElectricConductivity * dt)) / lattice_width;
     let am = (2 * Permeability - MagneticConductivity * dt) / (2 * Permeability + MagneticConductivity * dt);
     let bm = ((2 * dt) / (2 * Permeability + MagneticConductivity * dt)) / lattice_width;
 
@@ -108,17 +120,29 @@ export function makeFDTDInput(data) {
       bm: bm,
       Permittivity: Permittivity,
       Permeability: Permeability,
-      pml_conductivty_max: pml_conductivty_max,
-      pml_magnetic_max: pml_magnetic_max
+      pmlConductivtyMax: pmlConductivtyMax,
+      pmlMagneticMax: pmlMagneticMax
     }
     return obj;
   }
 }
 
 export function checker_FDTDINPUT(obj1) {
-  if (!obj1) return false;
-  const fields = ['nx', 'ny', 'lpml', 'lattice_width', 'bitmap', 'dt', 'v', 'order', 'feq', 'FeedPoints', 'Mediums', 'colorThreshold', 'amplitudeScaler'];
-  if (!fields.every(field => obj1.hasOwnProperty(field))) {
+  if (!obj1){
+    console.log("オブジェクトがnullです");
+    return false;
+  } 
+  const fields = ['nx', 'ny', 'lpml', 'lattice_width', 'bitmap', 'dt',
+   'v', 'order', 'freq', 'FeedPoints', 'Mediums', 'color', 'amplitudeScaler'];
+   const missingFields = fields.filter(field => !obj1.hasOwnProperty(field));
+
+   if (missingFields.length > 0) {
+     console.log("足りないフィールド:", missingFields.join(', '));
+     return false;
+   }
+ 
+   console.log("結果は"+!fields.every(field => obj1.hasOwnProperty(field)));
+   if (!fields.every(field => obj1.hasOwnProperty(field))) {
     return false;
   }
   return true;
@@ -126,14 +150,13 @@ export function checker_FDTDINPUT(obj1) {
 export function checker_SIMULATIONDATA(obj) {
   if (!obj) return false;
 
-  const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
+  const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
   // Before checking bitmap, make sure that the necessary setting fields exist
   if (!obj.setting || !settingFields.every(field => typeof obj.setting[field] === 'number')) {
     return false;
   }
   const xnum = obj.setting.split;
   const ynum = Math.ceil(obj.setting.fieldY / (obj.setting.fieldX / xnum));
-
   const requiredFields = {
     bitmap: (data) => {
       if (!Array.isArray(data)) return false;
@@ -141,7 +164,7 @@ export function checker_SIMULATIONDATA(obj) {
       return data.every(subArray => Array.isArray(subArray) && subArray.length === ynum);
     },
     setting: (data) => {
-      const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
+      const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
       return settingFields.every(field => typeof data[field] === 'number');
     },
     feedPoint: (data) => Array.isArray(data) && data.length > 0 && data.every(Item => {
@@ -152,7 +175,10 @@ export function checker_SIMULATIONDATA(obj) {
       const mediumFields = ['DielectricConstant', 'DielectricLoss', 'MagneticConstant', 'MagneticLoss'];
       return mediumFields.every(field => typeof mediumItem[field] === 'number');
     }),
-    colorThreshold: (data) => typeof data === 'number' && data >= 0,
+    color: (data) => {
+      const colorFields = ['colorThreshold', 'colorTransitionIndex'];
+      return colorFields.every(field => typeof data[field] === 'number');
+    },
     amplitudeScaler: (data) => {
       if (data === undefined) return false;
       const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'Rise', 'Pulse'];
@@ -165,37 +191,53 @@ export function checker_SIMULATIONDATA(obj) {
     },
   };
 
-
   // Check if each required property exists and is valid
-  for (const [key, validator] of Object.entries(requiredFields)) {
-    if (!validator(obj[key])) return false;
-  }
 
+  for (const [key, validator] of Object.entries(requiredFields)) {
+    if (!validator(obj[key])){
+      console.log("obj:wrong " +key);
+      return false;
+    } 
+  }
+  console.log("checkerSIMULATIONDATA was true");
   return true;
 }
 export class ColorCode {
   m;
   colormap;
-  constructor() {
-    this.m = 0.1;
-    this.colormap = new Array(200);
-    this.calculateColors();
-  }
-  setM(max) {
+  constructor(max, index) {
     this.m = max;
+    this.colormap = new Array(200);
+    this.calculateColors(index);
   }
-  calculateColors() {
+  calculateColors(index) {
     let r, g, b;
+    let slopeF;
+    let shiftF;
+    let slopeL;
+    let shiftL;
+    if (index === 0) {
+      slopeF = -0.2;
+      shiftF = 20.0;
+      slopeL = -0.08;
+      shiftL = 65.0;
+    } else {
+      slopeF = -0.3;
+      shiftF = 35.0;
+      slopeL = -0.11;
+      shiftL = 75.0;
+    }
+
     for (let i = 0; i < 100; i++) {
       b = 255;
-      r = Math.round(255.0 - 255.0 / (1 + Math.exp(-0.15 * (i - 30.0))));
-      g = Math.round(255.0 - 255.0 / (1 + Math.exp(-0.1 * (i - 75.0))));
+      r = Math.round(255.0 - 255.0 / (1 + Math.exp(slopeF * (i - shiftF))));
+      g = Math.round(255.0 - 255.0 / (1 + Math.exp(slopeL * (i - shiftL))));
       this.colormap[100 - i] = `rgb(${r},${g},${b})`;
     }
     for (let i = 0; i < 100; i++) {
+      g = Math.round(255.0 - 255.0 / (1 + Math.exp(slopeL * (i - shiftL))));
       r = 255;
-      b = Math.round(255.0 - 255.0 / (1 + Math.exp(-0.15 * (i - 30.0))));
-      g = Math.round(255.0 - 255.0 / (1 + Math.exp(-0.1 * (i - 75.0))));
+      b = Math.round(255.0 - 255.0 / (1 + Math.exp(slopeF * (i - shiftF))));
       this.colormap[100 + i] = `rgb(${r},${g},${b})`;
     }
   }
@@ -227,7 +269,7 @@ export class FDTD2D_PML {
   pmlBlocks;
   Mediums;
   FeedPoints;
-  feq;
+  freq;
   amplitudeScaler;
   constructor(fdtd_input) {
     if (!checker_FDTDINPUT(fdtd_input)) {
@@ -239,7 +281,7 @@ export class FDTD2D_PML {
     this.ny = fdtd_input.ny;
     this.lattice_width = fdtd_input.lattice_width;
     this.lpml = fdtd_input.lpml;
-    this.feq = fdtd_input.feq;
+    this.freq = fdtd_input.freq;
     this.bitmap = fdtd_input.bitmap;
     this.Mediums = fdtd_input.Mediums;
     this.FeedPoints = fdtd_input.FeedPoints;
@@ -249,7 +291,6 @@ export class FDTD2D_PML {
     var nx = this.nx;
     var ny = this.ny;
     var lpml = this.lpml;
-    var lattice_width = this.lattice_width;
     var order = this.order;
     var dt = this.dt;
     var order = this.order;
@@ -332,8 +373,8 @@ export class FDTD2D_PML {
           }
         }
         const onepmlline = () => {
-          let pml_conductivty_max = this.Mediums[bitmap[xpoint][ypoint]].pml_conductivty_max;
-          let pml_magnetic_max = this.Mediums[bitmap[xpoint][ypoint]].pml_magnetic_max;
+          let pml_conductivty_max = this.Mediums[bitmap[xpoint][ypoint]].pmlConductivtyMax;
+          let pml_magnetic_max = this.Mediums[bitmap[xpoint][ypoint]].pmlMagneticMax;
           let e = this.Mediums[bitmap[xpoint][ypoint]].Permittivity;
           let m = this.Mediums[bitmap[xpoint][ypoint]].Permeability;
 
@@ -349,9 +390,9 @@ export class FDTD2D_PML {
               let sigxe = pml_conductivty_max * Math.pow(te, order);
               let sigxm = pml_magnetic_max * Math.pow(tm, order);
               let a = (2.0 * e - sigxe * dt) / (2.0 * e + sigxe * dt);
-              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / lattice_width;
+              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / this.lattice_width;
               let c = (2.0 * m - sigxm * dt) / (2.0 * m + sigxm * dt);
-              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / lattice_width;
+              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / this.lattice_width;
               this.aeypml[xpoint][ypoint + pmlV.Y * i] = a;
               this.beypml[xpoint][ypoint + pmlV.Y * i] = b;
               this.amypml[xpoint][ypoint + pmlV.Y * i] = c;
@@ -371,9 +412,9 @@ export class FDTD2D_PML {
               let sigxe = pml_conductivty_max * Math.pow(te, order);
               let sigxm = pml_magnetic_max * Math.pow(tm, order);
               let a = (2.0 * e - sigxe * dt) / (2.0 * e + sigxe * dt);
-              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / lattice_width;
+              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / this.lattice_width;
               let c = (2.0 * m - sigxm * dt) / (2.0 * m + sigxm * dt);
-              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / lattice_width;
+              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / this.lattice_width;
               this.aexpml[xpoint + pmlV.X * i][ypoint] = a;
               this.bexpml[xpoint + pmlV.X * i][ypoint] = b;
               this.amxpml[xpoint + pmlV.X * i][ypoint] = c;
@@ -494,7 +535,7 @@ export class FDTD2D_PML {
   }
   feed() {
     this.FeedPoints.forEach((f) => {
-      this.Ez[f.x][f.y] += 1.0 * Math.sin(2.0 * Math.PI * this.feq * this.t + Math.PI * f.phase / 180) * this.func_AmplitudeScaler(this.simulationNum);
+      this.Ez[f.x][f.y] += 1.0 * Math.sin(2.0 * Math.PI * this.freq * this.t + Math.PI * f.phase / 180) * this.func_AmplitudeScaler(this.simulationNum);
     })
   }
   cal() {

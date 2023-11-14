@@ -275,10 +275,10 @@ export const BoxGrid = ({ drawData, draftDrawData, setDraftDrawData }) => {
               <FrontHeaderInner>
                 <FrontHeaderLeft>
                   <TitleWrapper>
-                    <CustomH3 style={{ margin: 0 }}>x軸の分解精度</CustomH3>
+                    <CustomH3 style={{ margin: 0 }}>X-Axis Resolution</CustomH3>
                   </TitleWrapper>
                   <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
-                    <ButtonSmall onClick={() => onClick_setToDefault()}>戻す</ButtonSmall>
+                    <ButtonSmall onClick={() => onClick_setToDefault()}>go back</ButtonSmall>
                   </ButtonSmallWrapper>
                 </FrontHeaderLeft>
               </FrontHeaderInner>
@@ -289,7 +289,7 @@ export const BoxGrid = ({ drawData, draftDrawData, setDraftDrawData }) => {
                 <GridColumn>
 
                   <ColumnTitle style={{ fontFamily: "serif" }}>
-                    x軸の分解精度 : {split}
+                    X-Axis Resolution : {split}
                   </ColumnTitle>
                   <SliderWrapper>
                     <Slider

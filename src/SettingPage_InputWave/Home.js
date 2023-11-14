@@ -3,8 +3,8 @@ import styled from "styled-components";
 import React, { useState, useEffect, useRef } from 'react';
 import { BoxDefault } from "./Box/BoxDefault";
 import { BoxFormula } from "./Box/BoxForumula";
-import { BoxSetting} from "./Box/BoxSetting";
-
+import { BoxSetting } from "./Box/BoxSetting";
+import { BoxFreq } from "./Box/BoxFreq";
 const ContainerHome = styled.div`
   position:relative;
   display: inline-block;
@@ -78,16 +78,59 @@ const Label = styled.div`
   text-align:right;
   font-size:13px;
 `
-export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler, defaultSetting, defaultAmplitudeScaler,setShowWindow }) => {
+
+
+const ButtonReturnWrapper = styled.div`
+  text-align: center;
+  display: flex;
+  padding-top:14px;
+  align-items: center;
+  margin:auto;
+`
+const ButtonReturn = styled.div`
+  backface-visibility: hidden;
+  background-color:rgb(255,153,0);
+  border: 0;
+  box-sizing: border-box;
+  color:rgb(0,0,0);
+  cursor: pointer;
+  display: inline-block;
+  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
+  font-weight: 500;
+  font-size:18px;
+  line-height:1.9;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  letter-spacing:.25px;
+  border-radius:4px;
+  padding: 0px 22px;
+  transition: transform .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+  &:hover{
+    background-color:rgb(236,114,17);
+  }
+  &:active{
+    background-color:#EB5F07;
+}
+`
+export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler, defaultSetting, defaultAmplitudeScaler, setShowWindow }) => {
   const GraphProps = {
     setting,
     amplitudeScaler
   }
-  const DefaultBoxProps={
+  const DefaultBoxProps = {
     defaultSetting,
     defaultAmplitudeScaler
   }
-  const SettingBox={
+  const FreqBox = {
+    setting, setSetting,
+    defaultSetting
+  }
+  const SettingBox = {
     setting, setSetting,
     amplitudeScaler, setAmplitudeScaler,
     defaultSetting,
@@ -102,9 +145,12 @@ export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler,
           <ToggleInner>
             <BoxWrapper>
               <BoxFormula></BoxFormula>
-              <BoxDefault {...DefaultBoxProps}></BoxDefault>
-              <BoxSetting {...SettingBox}/>
-              <div style={{height:"5px"}}></div>
+              <BoxFreq {...FreqBox}></BoxFreq>
+              <BoxSetting {...SettingBox} />
+              <div style={{ height: "5px" }}></div>
+              <ButtonReturnWrapper>
+                <ButtonReturn onClick={() => setShowWindow("home")}>Return to Home</ButtonReturn>
+              </ButtonReturnWrapper>
             </BoxWrapper>
           </ToggleInner>
         </ToggleWrapper>
@@ -112,3 +158,7 @@ export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler,
     </ContainerHome>
   )
 };
+/*
+              <BoxDefault {...DefaultBoxProps}></BoxDefault>
+
+*/

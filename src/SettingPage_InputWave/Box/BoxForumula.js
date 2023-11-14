@@ -91,7 +91,7 @@ const CustomH3 = styled.span`
 `
 const FrontBody = styled.div`
 position:relative;
-padding:10px 20px 12px 20px;
+padding:8px 20px 8px 20px;
 `
 const FrontBodyInner = styled.div`
 position:relative;
@@ -118,72 +118,28 @@ const ColumnLayout = styled.div`
   cursor:auto;
   direction:1tr;
   text-align:left;
-  font-size:18px;
-  line-height:20px;
+  font-size:16px;
+  line-height:16px;
   color:#16191f;
   font-weight:500;
   font-family:times new roman,serif;
 `
 const GridColumn = styled.div`
-  padding:10px 8px 5px 8px;
+  padding:8px 8px 8px 8px;
   box-sizing:border-box;
   display:flex;
   position:relative;
   flex-direction:column;
 `
-const ColumnTitle = styled.div`
-  font-size:16px;
-  font-weight:500;
-  line-height:1.2;
-  color:rgb(100,100,100);
-  margin-bottom:2px;
-  font-family:times new roman,serif;
-  font-family:"times new roman", serif;
-`
+
 //,"Helvetica Neue",Roboto,Arial,sans-serif
-const SpanText = styled.span`
-font-size:15px;
-font-weight:500;
-line-height:22px;
-color:rgb(40,40,40);
-margin-bottom:2px;
-`
-const ButtonWrapperRight = styled.div`
-display: flex;
-`
-const Button = styled.button`
-background-color:rgb(255,255,255);
-border-color:rgb(0,0,0);
-border-style:solid;
-border-width:1px;
-border-radius:3px;
-padding:0px 15px;
-line-height:1.5;
-display:flex;
-justify-content:center;
-&:hover {
-  border-color:rgb(100,100,100);
-  background-color:rgb(240,240,240);
-}
-&:active{
-  background-color:rgb(225,225,225);
-}
-cursor:pointer;
-`
-const ContentBodyRow = styled.div`
-  margin-bottom:7px;
-  position:relative;
-  display: inline-block;
-  display:flex;
-`
+
 const FrontHeaderLeft = styled.div`
 line-height:none;
 display:flex;
 flex-direction:row;
 `
-const SliderWrapper = styled.div`
-padding:4px 0px 5px 0px;
-`
+
 const FormulaLabel = styled.div`
   margin-left:5px;
   text-align:left;
@@ -198,43 +154,10 @@ font-size:14px;
 margin:8px 0px 0px 7px;
 `
 
-const ButtonDownloadWrapper = styled.div`
-text-align: center;
-`
-const ButtonDownload = styled.div`
-backface-visibility: hidden;
-background-color:rgb(255,153,0);
-border: 0;
-box-sizing: border-box;
-color:rgb(0,0,0);
-cursor: pointer;
-display: inline-block;
-font-family: Circular,Helvetica,sans-serif;
-font-weight: 500;
-line-height: 1.6;
-padding:0px 15px;
-border-radius:3px;
-margin:0px 0px 0px 0px;
-position: relative;
-text-align: left;
-text-decoration: none;
-transition: transform .2s;
-user-select: none;
--webkit-user-select: none;
-touch-action: manipulation;
-
-&:hover{
-  background-color:rgb(236,114,17);
-}
-&:active{
-  background-color:#EB5F07;
-}
-`
-
 const SVGWrapper = styled.div`
 margin-left:20px;
-  height: 40px;
-  width: 280px;
+  height: 30px;
+  width: 250px;
   margin-top: 2px;
   margin-bottom: 2px;
   display: flex;
@@ -267,7 +190,7 @@ export const BoxFormula = ({}) => {
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>入力波 数式</CustomH3>
+                <CustomH3>Input Wave Equations</CustomH3>
               </TitleWrapper>
             </FrontHeaderLeft>
           </FrontHeaderInner>
@@ -277,8 +200,8 @@ export const BoxFormula = ({}) => {
           <ColumnLayout>
             <GridColumn>
               <LabelRow>
-                <FormulaLabel>正弦波 :</FormulaLabel>
-                <SVGWrapper>
+                <FormulaLabel>Sine Wave :</FormulaLabel>
+                <SVGWrapper style={{height:"34px"}}>
                   <SVGInner>
                     <StyledImg
                       src={`${process.env.PUBLIC_URL}/sineLaTeX.svg`}
@@ -289,7 +212,7 @@ export const BoxFormula = ({}) => {
               </LabelRow>
 
               <LabelRow>
-                <FormulaLabel style={{ paddingTop: "22px" }}>ガウスパルス : </FormulaLabel>
+                <FormulaLabel style={{ paddingTop: "8px",justifyContent:"center" }}>Gaussian Pulse : </FormulaLabel>
                 <SVGWrapper>
                   <SVGInner>
                     <StyledImg
@@ -299,7 +222,7 @@ export const BoxFormula = ({}) => {
                   </SVGInner>
                 </SVGWrapper>
               </LabelRow>
-              <Label style={{fontSize:"14px"}}>x: シミュレーション回数</Label>
+              <Label style={{fontSize:"14px"}}>x: Simulation Count</Label>
             </GridColumn>
           </ColumnLayout>
         </FrontBody>

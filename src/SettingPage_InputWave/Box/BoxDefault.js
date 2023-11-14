@@ -58,7 +58,7 @@ const FrontHeaderInner = styled.div`
  width:100%;
  background-color: rgb(246,246,246);
  display:flex;
- padding:5px 20px 3px 20px;
+ padding:5px 20px 8px 20px;
  box-sizing:border-box;
  border:none;
  line-height 22px;
@@ -121,7 +121,7 @@ const ColumnLayout = styled.div`
   font-family:times new roman,serif;
 `
 const GridColumn = styled.div`
-  padding:10px 8px 0px 8px;
+  padding:10px 8px 10px 8px;
   box-sizing:border-box;
   display:flex;
   position:relative;
@@ -184,7 +184,7 @@ export const BoxDefault = ({ defaultSetting: { lambda }, defaultAmplitudeScaler:
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>初期設定</CustomH3>
+                <CustomH3>Initial Settings</CustomH3>
               </TitleWrapper>
 
             </FrontHeaderLeft>
@@ -195,27 +195,27 @@ export const BoxDefault = ({ defaultSetting: { lambda }, defaultAmplitudeScaler:
           <ColumnLayout>
             <GridColumn>
               <ContentBodyColumn>
-                <Label>シミュレーション回数の上限: {simulationNum}</Label>
-                <Label>波長[m]: {lambda}</Label>
+                <Label>Maximum Number of Simulations: {simulationNum}</Label>
+                <Label>Wavelength[m]: {lambda}</Label>
               </ContentBodyColumn>
               <ContentBodyColumn>
                 <div>
                   <JustFlexRow>
-                    <Label>正弦波の設定 : </Label>
+                    <Label>Sine Wave Settings : </Label>
                     <Label>slope: {slope}</Label>
                   </JustFlexRow>
                   <JustFlexRow>
-                    <Label style={{ visibility: "hidden" }}>正弦波の設定 : </Label>
+                    <Label style={{ visibility: "hidden" }}>Sine Wave Settings : </Label>
                     <Label>shift: {shift}</Label>
                   </JustFlexRow>
                 </div>
                 <div>
                   <JustFlexRow>
-                    <Label>ガウスパルスの設定 : </Label>
+                    <Label>Gaussian Pulse Settings : </Label>
                     <Label>peakPosition: {peakPosition}</Label>
                   </JustFlexRow>
                   <JustFlexRow>
-                    <Label style={{ visibility: "hidden" }}>ガウスパルスの設定 : </Label>
+                    <Label style={{ visibility: "hidden" }}>Gaussian Pulse Settings : </Label>
                     <Label>widthFactor: {widthFactor}</Label>
                   </JustFlexRow>
                 </div>

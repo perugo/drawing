@@ -91,7 +91,7 @@ const CustomH3 = styled.span`
 `
 const FrontBody = styled.div`
 position:relative;
-padding:10px 20px 12px 20px;
+padding:10px 10px 6px 10px;
 `
 const FrontBodyInner = styled.div`
 position:relative;
@@ -119,27 +119,18 @@ const ColumnLayout = styled.div`
   direction:1tr;
   text-align:left;
   font-size:18px;
-  line-height:20px;
   color:#16191f;
   font-weight:500;
   font-family:times new roman,serif;
 `
 const GridColumn = styled.div`
-  padding:10px 8px 5px 8px;
-  box-sizing:border-box;
-  display:flex;
-  position:relative;
-  flex-direction:column;
+padding:5px 20px 5px 20px;
+box-sizing:border-box;
+display:flex;
+position:relative;
+flex-direction:column;
 `
-const ColumnTitle = styled.div`
-  font-size:16px;
-  font-weight:500;
-  line-height:1.2;
-  color:rgb(100,100,100);
-  margin-bottom:2px;
-  font-family:times new roman,serif;
-  font-family:"times new roman", serif;
-`
+
 //,"Helvetica Neue",Roboto,Arial,sans-serif
 const SpanText = styled.span`
 font-size:15px;
@@ -182,7 +173,10 @@ display:flex;
 flex-direction:row;
 `
 const SliderWrapper = styled.div`
-padding:4px 0px 5px 0px;
+padding:0px;
+padding-bottom:2px;
+line-height:20px;
+cursor:grab;
 `
 const Label = styled.div`
   margin-left:5px;
@@ -222,33 +216,87 @@ touch-action: manipulation;
   background-color:#EB5F07;
 }
 `
+const TextRow = styled.div`
+display:flex;
+flex-direction:row;
+`
+const Text = styled.div`
+font-size:18px;
+margin:0;
+padding:0;
+`
 
 
-export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
+
+const TransitionsWrapper = styled.div`
+padding-top:2px;
+display:flex;
+flex-direction:column;
+gap:2px;
+`
+const Transition = styled.div`
+display:flex;
+flex-direction:row;
+`
+const SVGWrapper = styled.div`
+  height: 15px;
+  flex-grow:1;
+  margin-top: 2px;
+  margin-bottom: 2px;
+`;
+const SVGInner = styled.div`
+  position: relative;
+  width: inherit;
+  height: inherit;
+  margin: auto;
+`;
+const StyledImg = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2; // Ensure the image is always on top
+`;
+const RadioButton = styled.label`
+  font-size: 15px;
+  display:flex;
+  position:relative;
+`
+const TransitionText = styled.div`
+margin-top:-1px;
+padding-right:3px;
+width:auto;
+white-space: nowrap;
+font-size:14px;
+`
+export const BoxColorTransition = ({ color, setColor }) => {
   const timeoutIdRef = useRef();
   const [dispThreshold, setDispThreshold] = useState(0);//rc-sliderが少数点の値を扱えないため、colorThreshold*100したもの
   const [marks, setMarks] = useState({});
   const [thresholdMax, setThresholdMax] = useState(0);
   const [thresholdMin, setThresholdMin] = useState(0);
-  useEffect(() => {
-    if (colorThreshold === undefined && colorThreshold <= 0.1) return;
-    const initialMarks = {};
-    let i = 1;
-    setThresholdMin(i);
-    for (i = 1; i < 50; i += 2.5) {
-      initialMarks[i] = ' ';
-    }
-    setThresholdMax(i);
-    setMarks(initialMarks);
-    setDispThreshold(colorThreshold*100);
-  }, [colorThreshold])
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (color.colorTransitionIndex === undefined || color.colorThreshold === undefined) return;
+    const { colorThreshold, colorTransitionIndex } = color;
+    setDispThreshold(colorThreshold * 100);
+    setSelectedIndex(colorTransitionIndex);
+  }, [color])
+
+  useEffect(() => {
+    const obj=setInitialMarks(setThresholdMin,setThresholdMax);
+    setMarks(obj);
+  }, [])
   useEffect(() => {
     clearTimeout(timeoutIdRef.current);
     startTimer();
   }, [dispThreshold])
+
   const handleTimeout = () => {
-    setColorThreshold(dispThreshold / 100);
+    setColor({ ...color, colorThreshold: dispThreshold / 100 });
   };
   const handleSliderChanged = (newValue) => {
     setDispThreshold(newValue);
@@ -256,6 +304,16 @@ export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
   const startTimer = () => {
     timeoutIdRef.current = setTimeout(handleTimeout, 400);
   };
+
+  const changeObjectIndex = (index) => {
+    if (index === 0) setColor({ ...color, colorTransitionIndex: 0 });
+    if (index === 1) setColor({ ...color, colorTransitionIndex: 1 });
+  }
+  const TransitionObject = [
+    { label: "color transition1", imageSrc: `${process.env.PUBLIC_URL}/colorTransition1.png` },
+    { label: "color transition2", imageSrc: `${process.env.PUBLIC_URL}/colorTransition2.png` }
+  ];
+
   return (
     <BoxWrapper>
       <Front>
@@ -263,7 +321,7 @@ export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>色閾値</CustomH3>
+                <CustomH3>Color Threshold</CustomH3>
               </TitleWrapper>
             </FrontHeaderLeft>
           </FrontHeaderInner>
@@ -272,9 +330,10 @@ export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
         <FrontBody>
           <ColumnLayout>
             <GridColumn>
-              <ColumnTitle style={{ fontFamily: "serif" }}>
-                色閾値 : {dispThreshold / 100}
-              </ColumnTitle>
+              <TextRow>
+                <Text style={{ fontSize: "13px", padding: "1px 7px 0px 0px" }}>threshold value: </Text>
+                <Text>{dispThreshold / 100}</Text>
+              </TextRow>
               <SliderWrapper>
                 <Slider
                   value={dispThreshold}
@@ -283,11 +342,33 @@ export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
                   step={null}
                   marks={marks}
                   onChange={handleSliderChanged}
-                  railStyle={{ backgroundColor: '#ddd', borderRadius: "5px", height: "10px" }}
-                  trackStyle={{ backgroundColor: 'rgb(60,60,235)', borderRadius: "5px", height: "10px" }}
+                  railStyle={{ backgroundColor: '#ddd', borderRadius: "5px", height: "8px" }}
+                  trackStyle={{ backgroundColor: 'rgb(60,60,235)', borderRadius: "5px", height: "8px" }}
                   handleStyle={{ fontSize: '18px' }}
                 />
               </SliderWrapper>
+              <TransitionsWrapper>
+                {TransitionObject.map((item, index) => (
+                  <Transition key={index} onClick={() => changeObjectIndex(index)}>
+                    <RadioButton>
+                      <input
+                        type="radio"
+                        checked={index === selectedIndex}
+                        readOnly
+                      />
+                    </RadioButton>
+                    <TransitionText>{item.label}</TransitionText>
+                    <SVGWrapper>
+                      <SVGInner>
+                        <StyledImg
+                          src={item.imageSrc}
+                          alt="Decrement"
+                        />
+                      </SVGInner>
+                    </SVGWrapper>
+                  </Transition>
+                ))}
+              </TransitionsWrapper>
             </GridColumn>
           </ColumnLayout>
         </FrontBody>
@@ -295,3 +376,22 @@ export const BoxColorThreshold = ({ colorThreshold, setColorThreshold }) => {
     </BoxWrapper>
   )
 };
+
+const setInitialMarks = (setThresholdMin, setThresholdMax) => {
+  const initialMarks = {};
+  let i = 1;
+  initialMarks[i] = '';
+  setThresholdMin(i);
+  for (i = 2.0; i <= 10; i += 2.0) {
+    initialMarks[i] = ' ';
+  }
+  for (i = 10; i <= 50; i += 2.5) {
+    if (i % 10 === 0) {
+      initialMarks[i] = (i / 100).toString();
+    } else {
+      initialMarks[i] = ' ';
+    }
+  }
+  setThresholdMax(i - 2.5);
+  return initialMarks;
+}

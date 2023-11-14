@@ -39,9 +39,8 @@ export const handleKeyDown = (type) => (e) => {
     e.preventDefault();
   }
 };
-export const setToDefault = (defaultSetting, defaultAmplitudeScaler, setStrLambda, setStrAmplitudeScaler) => {
+export const setToDefault = ( defaultAmplitudeScaler, setStrAmplitudeScaler) => {
   const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum } = defaultAmplitudeScaler;
-  const { lambda } = defaultSetting;
   const stringAmplitudeScaler = {
     simulationNum: simulationNum.toString(),
     slope: slope.toString(),
@@ -50,9 +49,8 @@ export const setToDefault = (defaultSetting, defaultAmplitudeScaler, setStrLambd
     widthFactor: widthFactor.toString()
   };
   setStrAmplitudeScaler(stringAmplitudeScaler);
-  setStrLambda(lambda.toString());
 }
-export const updateStringStates = (amplitudeScaler, setting, setStrAmplitudeScaler, setStrLambda) => {
+export const updateStringStates = (amplitudeScaler, setStrAmplitudeScaler) => {
   const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum } = amplitudeScaler;
   setStrAmplitudeScaler({
     simulationNum: simulationNum.toString(),
@@ -61,12 +59,10 @@ export const updateStringStates = (amplitudeScaler, setting, setStrAmplitudeScal
     peakPosition: peakPosition.toString(),
     widthFactor: widthFactor.toString()
   });
-  const { lambda } = setting;
-  setStrLambda(lambda.toString());
 }
 export function isStateComplete(amplitudeScaler, setting) {
   return checker_amplitudeScaler(amplitudeScaler) &&
-    setting.lambda !== undefined;
+    setting.freq !== undefined;
 }
 export function isValidNumber(input) {
   let str = String(input); // Convert the input to a string

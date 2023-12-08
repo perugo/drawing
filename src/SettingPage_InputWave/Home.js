@@ -1,10 +1,8 @@
 import Graph from './Graph';
 import styled from "styled-components";
 import React, { useState, useEffect, useRef } from 'react';
-import { BoxDefault } from "./Box/BoxDefault";
 import { BoxFormula } from "./Box/BoxForumula";
 import { BoxSetting } from "./Box/BoxSetting";
-import { BoxFreq } from "./Box/BoxFreq";
 const ContainerHome = styled.div`
   position:relative;
   display: inline-block;
@@ -79,13 +77,10 @@ const Label = styled.div`
   font-size:13px;
 `
 
-
 const ButtonReturnWrapper = styled.div`
   text-align: center;
-  display: flex;
-  padding-top:14px;
+  padding-top:5px;
   align-items: center;
-  margin:auto;
 `
 const ButtonReturn = styled.div`
   backface-visibility: hidden;
@@ -117,25 +112,44 @@ const ButtonReturn = styled.div`
     background-color:#EB5F07;
 }
 `
-export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler, defaultSetting, defaultAmplitudeScaler, setShowWindow }) => {
+const JustFlexRow = styled.div`
+display:flex;
+flex-direction:row;
+gap:40px;
+align-items:center;
+justify-content:center;
+padding-bottom:20px;
+`
+export const Home = ({
+  setting, setSetting,
+  amplitudeScaler, setAmplitudeScaler,
+  setShowWindow }) => {
+
+  const [draftSetting, setDraftSetting] = useState({});
+  const [draftAmplitudeScaler, setDraftAmplitudeScaler] = useState({});
+
+  useEffect(() => {
+    setDraftSetting(setting);
+    setDraftAmplitudeScaler(amplitudeScaler);
+  }, [setting, amplitudeScaler])
+
   const GraphProps = {
-    setting,
+    setting: draftSetting,
+    amplitudeScaler: draftAmplitudeScaler
+  }
+
+  const FormulaProps = {
     amplitudeScaler
   }
-  const DefaultBoxProps = {
-    defaultSetting,
-    defaultAmplitudeScaler
-  }
-  const FreqBox = {
-    setting, setSetting,
-    defaultSetting
-  }
   const SettingBox = {
-    setting, setSetting,
-    amplitudeScaler, setAmplitudeScaler,
-    defaultSetting,
-    defaultAmplitudeScaler,
+    setting: draftSetting, setSetting: setDraftSetting,
+    amplitudeScaler: draftAmplitudeScaler, setAmplitudeScaler: setDraftAmplitudeScaler,
     setShowWindow
+  }
+  const onClick_save = () => {
+    setSetting(draftSetting);
+    setAmplitudeScaler(draftAmplitudeScaler);
+    setShowWindow("home");
   }
   return (
     <ContainerHome>
@@ -144,13 +158,17 @@ export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler,
         <ToggleWrapper>
           <ToggleInner>
             <BoxWrapper>
-              <BoxFormula></BoxFormula>
-              <BoxFreq {...FreqBox}></BoxFreq>
+              <BoxFormula {...FormulaProps}></BoxFormula>
               <BoxSetting {...SettingBox} />
-              <div style={{ height: "5px" }}></div>
-              <ButtonReturnWrapper>
-                <ButtonReturn onClick={() => setShowWindow("home")}>Return to Home</ButtonReturn>
-              </ButtonReturnWrapper>
+              <div style={{ height: "0px" }}></div>
+              <JustFlexRow>
+                <ButtonReturnWrapper>
+                  <ButtonReturn onClick={() => onClick_save()}>保存</ButtonReturn>
+                </ButtonReturnWrapper>
+                <ButtonReturnWrapper>
+                  <ButtonReturn onClick={() => setShowWindow("home")}>戻る</ButtonReturn>
+                </ButtonReturnWrapper>
+              </JustFlexRow>
             </BoxWrapper>
           </ToggleInner>
         </ToggleWrapper>
@@ -158,7 +176,7 @@ export const Home = ({ setting, setSetting, amplitudeScaler, setAmplitudeScaler,
     </ContainerHome>
   )
 };
+
 /*
               <BoxDefault {...DefaultBoxProps}></BoxDefault>
-
 */

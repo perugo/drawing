@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, createRef } from 'react';
 const MainContentWrapper = styled.div`
   padding-left:10px;
   padding-right:10px;
-  width:800px;
+  width:950px;
 `
 const MainContentInner = styled.div`
   padding-bottom:20px;
@@ -13,8 +13,9 @@ const MainContentInner = styled.div`
 
 const Garbage_Inner = styled.div`
   position:relative;
-  height:30px;
-  width:40px;
+  height:25px;
+  width:30px;
+  padding-top:2px;
 `
 
 const ColumnLabel = styled.div`
@@ -92,53 +93,12 @@ const FrontWrapper = styled.div`
 
 `
 
-
-const FrontHeader = styled.div`
-  border-bottom:1px solid #eaeded;
-  background-color: rgb(250,250,250);
-`
-const FrontHeaderInner = styled.div`
-  width:100%;
-  display:flex;
-  padding:10px 20px 10px 20px;
-  box-sizing:border-box;
-  border:none;
-  line-height 22px;
-  tex-align:left;
-  justify-content:space-between;
-`
-const TitleWrapper = styled.div`
-  padding-top:4px;
-  flex-wrap:wrap;
-  justify-content:space-between;
-`
-const TitleInner = styled.div`
-  font-size:18px;
-  padding:4px 0 0px 0px;
-  min-width:0;
-  color:#16191f;
-`
-const CustomH3 = styled.div`
-  font-size:20px;
-  letter-spacing:normal;
-  font-weight:600;
-  -webkit-font-smoothing:auto;
-  margin:0;
-  display:inline;
-  margin-right:8px;
-  margin:0px;
-  color:rgb(40,40,40);
-`
 const FrontBody = styled.div`
   position:relative;
   padding-top:16px;
   padding:30px 30px 30px 20px;
 `
-const FrontHeaderLeft = styled.div`
-  line-height:none;
-  display:flex;
-  flex-direction:row;
-`
+
 const AWSStyledButton = styled.button`
   background:#fff;
   color:#545b64;
@@ -243,6 +203,8 @@ const ContentBodyRow = styled.div`
 const RowFlex = styled.div`
   box-sizing:border-box;
   padding:1rem 0;
+  padding-left:28px;
+
 `
 const MediumColorIcon = styled.div`
   width:32px;
@@ -320,6 +282,7 @@ const InputText = styled.input`
   text-align:right;
   box-sizing: border-box;
   font-size:16px;
+  padding:2px;
 `
 const LabelText = styled.div`
   display:flex;
@@ -353,12 +316,60 @@ const InputCell = styled.div`
   margin-left:10px;
   align-items: center; /* This is for vertical centering when the parent is a flex container */
 `
+
+
+
+const ButtonReturnWrapper = styled.div`
+  text-align: center;
+  padding-top:14px;
+  align-items: center;
+`
+const ButtonReturn = styled.div`
+  backface-visibility: hidden;
+  background-color:rgb(255,153,0);
+  border: 0;
+  box-sizing: border-box;
+  color:rgb(0,0,0);
+  cursor: pointer;
+  display: inline-block;
+  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
+  font-weight: 500;
+  font-size:18px;
+  line-height:1.9;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  letter-spacing:.25px;
+  border-radius:4px;
+  padding: 0px 22px;
+  transition: transform .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+  &:hover{
+    background-color:rgb(236,114,17);
+  }
+  &:active{
+    background-color:#EB5F07;
+}
+`
+const JustFlexRow = styled.div`
+display:flex;
+flex-direction:row;
+gap:40px;
+align-items:center;
+justify-content:center;
+padding-bottom:20px;
+`
+
+
 const MEDIUM_COLOR = ['rgb(255,255,255)', 'rgb(0,0,0)', 'rgb(0,0,200)', 'rgb(0,255,0)', 'rgb(255,255,0)'];
 const sections = [
-  { label: 'DielectricConstant', iconSrc: '/epsilondash.svg', altText: 'Dielectric Constant Icon' },
-  { label: 'DielectricLoss', iconSrc: '/epsilondash2.svg', altText: 'Dielectric Loss Icon' },
-  { label: 'MagneticConstant', iconSrc: '/mudash.svg', altText: 'Magnetic Constant Icon' },
-  { label: 'MagneticLoss', iconSrc: '/mudash2.svg', altText: 'Magnetic Loss Icon' }
+  { label: 'Dielectric Constant', iconSrc: '/epsilondash.svg', altText: 'Dielectric Constant Icon' },
+  { label: 'Dielectric Loss', iconSrc: '/epsilondash2.svg', altText: 'Dielectric Loss Icon' },
+  { label: 'Magnetic Constant', iconSrc: '/mudash.svg', altText: 'Magnetic Constant Icon' },
+  { label: 'Magnetic Loss', iconSrc: '/mudash2.svg', altText: 'Magnetic Loss Icon' }
 ];
 const mediumField = ['DielectricConstant', 'DielectricLoss', 'MagneticConstant', 'MagneticLoss'];
 
@@ -477,17 +488,6 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
             <SettingBoxContent>
               <Front>
                 <FrontWrapper>
-                  <FrontHeader>
-                    <FrontHeaderInner>
-                      <FrontHeaderLeft>
-                        <TitleWrapper>
-                          <TitleInner>
-                            <CustomH3 style={{ margin: 0 }}>Configure medium</CustomH3>
-                          </TitleInner>
-                        </TitleWrapper>
-                      </FrontHeaderLeft>
-                    </FrontHeaderInner>
-                  </FrontHeader>
                   <FrontBody>
                     <ContentBodyRow>
                       <Garbage_Inner></Garbage_Inner>
@@ -595,7 +595,7 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                     ))}
                     {inputMedium.length < 3 && (
                       <RowFlex>
-                        <AWSStyledButton onClick={() => addMedium()}>Add medium</AWSStyledButton>
+                        <AWSStyledButton onClick={() => addMedium()}>媒質を追加</AWSStyledButton>
                       </RowFlex>
                     )}
                     {errorlog.map((value, index) => (
@@ -607,7 +607,14 @@ export const Home = ({ mediumColor, medium, setShowWindow, setMedium }) => {
                 </FrontWrapper>
               </Front>
             </SettingBoxContent>
-            <ButtonDownloadWrapper style={{ "paddingBottom": "20px" }}><ButtonDownload onClick={() => save()}>更新</ButtonDownload></ButtonDownloadWrapper>
+            <JustFlexRow>
+              <ButtonReturnWrapper>
+                <ButtonReturn onClick={() => save()}>保存</ButtonReturn>
+              </ButtonReturnWrapper>
+              <ButtonReturnWrapper>
+                <ButtonReturn onClick={() => setShowWindow("home")}>戻る</ButtonReturn>
+              </ButtonReturnWrapper>
+            </JustFlexRow>
           </RightSide>
         </MainContentInner>
       </MainContentWrapper>

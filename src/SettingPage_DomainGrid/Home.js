@@ -217,10 +217,10 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
               <BoxDomain {...domainBoxProps} />
               <JustFlexRow>
               <ButtonReturnWrapper>
-                <ButtonReturn onClick={() => save()}>Save</ButtonReturn>
+                <ButtonReturn onClick={() => save()}>保存</ButtonReturn>
               </ButtonReturnWrapper>
               <ButtonReturnWrapper>
-                <ButtonReturn onClick={() => setShowWindow("home")}>Go Home</ButtonReturn>
+                <ButtonReturn onClick={() => setShowWindow("home")}>戻る</ButtonReturn>
               </ButtonReturnWrapper>
               </JustFlexRow>
             </BoxWrapper>
@@ -259,7 +259,7 @@ export function checker_DRAWDATA(obj1) {
     bitmap: (data) => data && Array.isArray(data),
     setting: (data) => {
       if (!data) return false;
-      const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
+      const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
       return settingFields.every(field => typeof data[field] === 'number');
     },
     feedPoint: (data) => data && Array.isArray(data) && data.length > 0 && data.every(Item => {

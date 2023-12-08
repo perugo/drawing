@@ -67,7 +67,7 @@ const FrontHeaderInner = styled.div`
  width:100%;
  background-color: rgb(246,246,246);
  display:flex;
- padding:5px 20px 3px 20px;
+ padding:1px 20px 0px 20px;
  box-sizing:border-box;
  border:none;
  line-height 22px;
@@ -260,7 +260,7 @@ const ButtonReturn = styled.div`
 }
 `
 const InputText = styled.input`
-width:120px;
+width:140px;
   text-align: right;
   box-sizing: border-box;
   font-size: 15px;
@@ -279,8 +279,8 @@ display: flex;
   margin-bottom: 2px;
 `
 const SmallLabel = styled.div`
-  width:140px;
-  font-size:16px;
+  width:100px;
+  font-size:14px;
   text-align:left;
 `;
 const SectionContainer = styled.div`
@@ -336,8 +336,8 @@ export const BoxDomain = ({
   };
 
   const inputFields = [
-    { name: "Width of X-Axis[m]: ", field: 'fieldX' },
-    { name: "Height of Y-Axis[m]: ", field: 'fieldY' }
+    { name: "x軸の幅 [ m ] : ", field: 'fieldX' },
+    { name: "y軸の幅 [ m ] : ", field: 'fieldY' }
   ];
   return (
     <BoxWrapper>
@@ -346,11 +346,8 @@ export const BoxDomain = ({
           <FrontHeaderInner>
             <FrontHeaderLeft>
               <TitleWrapper>
-                <CustomH3>Width・Height</CustomH3>
+                <CustomH3>x軸・y軸の幅</CustomH3>
               </TitleWrapper>
-              <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
-                <ButtonSmall onClick={() => onClick_setToDefault()}>go back</ButtonSmall>
-              </ButtonSmallWrapper>
             </FrontHeaderLeft>
           </FrontHeaderInner>
         </FrontHeader>

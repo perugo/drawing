@@ -1,133 +1,12 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { validateInput, checker_amplitudeScaler, handleKeyDown, setToDefault, updateStringStates, isStateComplete, isValidNumber } from './BoxSetting_helper';
-const BoxWrapper = styled.div`
-flex-direction:column;
-display:flex;
-`
-const Front = styled.div`
-  border-radius: 5px;
-  overflow: hidden;
-  box-sizing:border-box;
-  background-color: rgb(255,255,255);
-  border-spacing:0;
-  cursor:auto;
-  direction 1tr;
-  empty-cells:show;
-  hyphens:none;
-  tab-size:8;
-  text-align:left;
-  text-indent:0;
-  text-transform:none;
-  widows:2;
-  word-spacing:normal;
-  font-weight:400;
-  -webkit-font-smoothing:auto;
-  word-break:bread-word;
-  display:block;
-  position:relative;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-  &::before{
-    content:"";
-    position:absolute;
-    left:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    border-top: 1px solid #eaeded;
-    z-index:1;
-  }
-  &::after{
-    content:"";
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    box-shadow:0 1px 1px 0 rgba(0,28,36,0,3) 1px 1px 1px 1px 0 rgba(0,28,36,0.15), -1px 1px 1px 0 rgba(0,28,36,0.15);
-    mix-blend-mode:multiply;
-  }
-`
 
-const FrontHeader = styled.div`
-  border-bottom:1px solid #eaeded;
-`
-const FrontHeaderInner = styled.div`
- width:100%;
- background-color: rgb(246,246,246);
- display:flex;
- padding:5px 20px 3px 20px;
- box-sizing:border-box;
- border:none;
- line-height 22px;
- tex-align:left;
- justify-content:space-between;
-`
-const TitleWrapper = styled.div`
-flex-wrap:wrap;
-justify-content:space-between;
-display:flex;
-align-content:center;
-font-size:18px;
-min-width:0;
-color:#16191f;
-margin-right:15px;
-`
-const CustomH3 = styled.span`
- font-size:18px;
- font-weight:500;
- font-family:Arial,sans-serif, Helvetica,Circular;
- -webkit-font-smoothing:auto;
- display:inline;
- margin-right:8px;
- margin:0px;
- color:rgb(40,40,40);
-`
-const FrontBody = styled.div`
-position:relative;
-padding:10px 20px 12px 20px;
-`
-const FrontBodyInner = styled.div`
-position:relative;
-  cursor:pointer;
-  display:flex;
-  padding: 12px 20px 12px 20px;
-  border:none;
-  line-height:22px;
-  text-align:left;
-  background-color:#ddd;
-`
+import {
+  Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
+  ColumnLayout, GridColumn, FrontHeaderLeft
+} from './StyledBoxComponents';
 
-const ColumnLayout = styled.div`
-  margin:-10px;
-  display:flex;
-  flex-wrap:wrap;
-  color::#16191f;
-  box-sizing:border-box;
-  border-collapse:separete;
-  direction:1tr;
-  flex-direction:column;
-
-
-  cursor:auto;
-  direction:1tr;
-  text-align:left;
-  font-size:18px;
-  line-height:20px;
-  color:#16191f;
-  font-weight:500;
-  font-family:times new roman,serif;
-`
-const GridColumn = styled.div`
-  padding:10px 8px 5px 8px;
-  box-sizing:border-box;
-  display:flex;
-  position:relative;
-  flex-direction:column;
-`
 const ColumnTitle = styled.div`
   font-size:16px;
   font-weight:500;
@@ -174,11 +53,7 @@ const ContentBodyColumn = styled.div`
   display:flex;
   flex-direction:column;
 `
-const FrontHeaderLeft = styled.div`
-line-height:none;
-display:flex;
-flex-direction:row;
-`
+
 const ButtonSmallWrapper = styled.div`
   text-align: center;
   display: flex;
@@ -272,26 +147,35 @@ display: flex;
 `
 const SmallLabel = styled.div`
   width: 240px;
-  font-size:16px;
+  font-size:14px;
   text-align:left;
 `;
+const WaveFormLabel = styled.div`
+width: 240px;
+font-size:15px;
+text-align:left;
+`
 const SectionContainer = styled.div`
+  margin-left:-8px;
   background-color: #f9f9f9; // A subtle background color to differentiate the section
-  padding: 3px 5px 8px 3px;
+  padding: 3px 5px 8px 0px;
   border-radius: 5px;
   margin-bottom: 7px; // Space between sections
 `;
 export const BoxSetting = ({
   amplitudeScaler, setAmplitudeScaler,
-  defaultAmplitudeScaler,
   setShowWindow }) => {
-
   const [strAmplitudeScaler, setStrAmplitudeScaler] = useState({});
   const timeoutIdRef = useRef();
-
+  const [inputFields, setInputFields] = useState([]);
   useEffect(() => {
-    if (amplitudeScaler.Select===undefined) return;
-    updateStringStates(amplitudeScaler,setStrAmplitudeScaler);
+    if (amplitudeScaler.Select === undefined) return;
+    updateStringStates(amplitudeScaler, setStrAmplitudeScaler);
+    if (amplitudeScaler.Select == 'Rise') {
+      setInputFields(inputFields1);
+    } else {
+      setInputFields(inputFields2);
+    }
   }, [amplitudeScaler])
 
   const handleInputChange = (type, field) => (e) => {
@@ -307,10 +191,7 @@ export const BoxSetting = ({
 
     startSetInputTimer();
   };
-  const onClick_setToDefault = () => {
-    setToDefault(defaultAmplitudeScaler,setStrAmplitudeScaler);
-    setAmplitudeScaler(defaultAmplitudeScaler);
-  }
+
 
   const startSetInputTimer = () => {
     timeoutIdRef.current = setTimeout(handleSetInputTimeout, 1600);
@@ -334,69 +215,68 @@ export const BoxSetting = ({
 
   };
 
-  const inputFields = [
-    { name: "Maximum Number of Simulations : ", field: 'simulationNum', type: 'integer' },
-    { name: "Sine Wave Settings", field: 'text' },
+  const inputFields1 = [
+    { name: "シミュレーション回数の上限 : ", field: 'simulationNum', type: 'integer' },
+    { name: "正弦波の設定", field: 'text' },
     { name: "slope : ", field: 'slope', type: 'signedDecimal' },
     { name: "shift : ", field: 'shift', type: 'decimal' },
-    { name: "Gaussian Pulse Settings", field: 'text' },
-    { name: "peakPosition : ", field: 'peakPosition', type: 'decimal' },
-    { name: "widthFactor : ", field: 'widthFactor', type: 'decimal' } // lambda is handled separately
+  ];
+  const inputFields2 = [
+    { name: "シミュレーション回数の上限 : ", field: 'simulationNum', type: 'integer' },
+    { name: "変調パルス波の設定", field: 'text' },
+    { name: "peak position : ", field: 'peakPosition', type: 'decimal' },
+    { name: "width factor : ", field: 'widthFactor', type: 'decimal' } // lambda is handled separately
   ];
   return (
-    <BoxWrapper>
-      <Front>
-        <FrontHeader>
-          <FrontHeaderInner>
-            <FrontHeaderLeft>
-              <TitleWrapper>
-                <CustomH3>WaveShape</CustomH3>
-              </TitleWrapper>
-              <ButtonSmallWrapper style={{ marginLeft: "30px" }}>
-                <ButtonSmall onClick={() => onClick_setToDefault()}>Reset</ButtonSmall>
-              </ButtonSmallWrapper>
-            </FrontHeaderLeft>
-          </FrontHeaderInner>
-        </FrontHeader>
+    <Box>
+      <FrontHeader>
+        <FrontHeaderInner style={{padding:"4px 20px 3px 20px"}}>
+          <FrontHeaderLeft>
+            <TitleWrapper>
+              <CustomH3>波形</CustomH3>
+            </TitleWrapper>
 
-        <FrontBody>
-          <ColumnLayout>
-            <GridColumn>
+          </FrontHeaderLeft>
+        </FrontHeaderInner>
+      </FrontHeader>
+
+      <FrontBody>
+        <ColumnLayout>
+          <GridColumn>
+            <InputItemGrid>
+            </InputItemGrid>
+            {strAmplitudeScaler !== undefined && strAmplitudeScaler.slope !== undefined && (
               <InputItemGrid>
-              </InputItemGrid>
-              {strAmplitudeScaler !== undefined && strAmplitudeScaler.slope !== undefined && (
-                <InputItemGrid>
-                  {inputFields.map(({ name, field, type }, index) => {
-                    if (field === 'text') {
-                      return (
-                        <SectionContainer key={`${field}-${index}`}>
-                          <SmallLabel style={{ textAlign: "left", marginTop: "8px" }}>{name}</SmallLabel>
-                        </SectionContainer>
-                      );
-                    }
+                {inputFields.map(({ name, field, type }, index) => {
+                  if (field === 'text') {
                     return (
-                      <JustFlexRow key={field}>
-                        <SmallLabel>{name}</SmallLabel>
-                        <InputText
-                          key={field}
-                          maxLength="12"
-                          type="text"
-                          value={ strAmplitudeScaler[field]}
-                          onChange={handleInputChange(type, field)}
-                          onKeyDown={handleKeyDown(type)}
-                        />
-                      </JustFlexRow>
+                      <SectionContainer key={`${field}-${index}`}>
+                        <WaveFormLabel style={{ textAlign: "left", marginTop: "8px", marginLeft: "8px" }}>{name}</WaveFormLabel>
+                      </SectionContainer>
                     );
+                  }
+                  return (
+                    <JustFlexRow key={field}>
+                      <SmallLabel>{name}</SmallLabel>
+                      <InputText
+                        key={field}
+                        maxLength="12"
+                        type="text"
+                        value={strAmplitudeScaler[field]}
+                        onChange={handleInputChange(type, field)}
+                        onKeyDown={handleKeyDown(type)}
+                      />
+                    </JustFlexRow>
+                  );
 
-                  })}
-                </InputItemGrid>
-              )}
+                })}
+              </InputItemGrid>
+            )}
 
-            </GridColumn>
-          </ColumnLayout>
-        </FrontBody>
-      </Front>
-    </BoxWrapper>
+          </GridColumn>
+        </ColumnLayout>
+      </FrontBody>
+    </Box>
   )
 };
 function roundToFourSignificantFigures(num) {

@@ -54,7 +54,7 @@ align-items: center; /* Align text vertically */
 `
 const Textlb = styled.span`
 line-height:inherit;
-font-size:16px;
+font-size:15px;
 font-family:Arial,sans-serif, Helvetica,Circular;
 
 `

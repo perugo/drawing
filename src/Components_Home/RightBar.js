@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { BoxMedium } from './Box/BoxMedium';
-import { BoxInputWave } from './Box/BoxInputWave';
+import { BoxWaveform } from './Box/BoxWaveform';
 import { BoxFeedPoint } from "./Box/BoxFeedPoint";
 import { BoxColorTransition } from "./Box/BoxColorTransition";
 import { BoxDomainGrid } from "./Box/BoxDomainGrid";
@@ -10,7 +10,7 @@ const SettingWrapper = styled.div`
   position:relative;
   flex-grow:1;
   min-width:520px;
-  height:calc(100vh - 50px);
+  height:calc(100vh - 45px);
   display:flex;
   flex-direction:column;
   margin-left:4px;
@@ -59,7 +59,7 @@ const ToggleInner = styled.div`
 const BoxWrapper = styled.div`
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:9px;
   padding:10px 10px 0px 10px;
 `
 const Spacer = styled.div`
@@ -80,7 +80,7 @@ const ButtonDownload = styled.div`
   line-height: 1.8;
   padding:0px 15px;
   border-radius:3px;
-  margin:15px 0px 18px 0px;
+
   position: relative;
   text-align: left;
   text-decoration: none;
@@ -97,11 +97,11 @@ const ButtonDownload = styled.div`
   }
 `
 const ButtonContainer = styled.div`
-margin-top:14px;
 grid-gap:50px;
 display:flex;
 justify-content:center;
 align-items:center;
+padding:16px 0px 20px 0px;
 `
 
 const SVGWrapperCombined = styled.div`
@@ -130,7 +130,7 @@ flex-direction:row;
 grid-gap:5px;
 margin-bottom:5px;
 `
-export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint, setShowWindow, push, selectedIndex, setSelectedIndex, amplitudeScaler, setAmplitudeScaler, clearBitmap, moveVideo, setMoveVideo, showSimulation, setShowSimulation, reset, color, setColor
+export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint, setShowWindow, push, selectedIndex, setSelectedIndex, amplitudeScaler, setAmplitudeScaler, clearBitmap, moveVideo, setMoveVideo, showSimulation, setShowSimulation, reset, color, setColor,
 }) => {
 
   const MediumBoxProps = {
@@ -143,7 +143,7 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
     amplitudeScaler, setAmplitudeScaler,
     setShowWindow
   };
-  const BoxFreq={
+  const BoxFreqProps={
     setting,setSetting
   }
   const FeedPointBoxProps = {
@@ -194,7 +194,8 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
       <ToggleWrapper>
         <ToggleInner>
           <BoxWrapper>
-            <BoxInputWave {...InputWaveBoxProps} />
+            <BoxFreq {...BoxFreqProps} style={{overflow:"visible"}}></BoxFreq>
+            <BoxWaveform {...InputWaveBoxProps} />
             <BoxMedium {...MediumBoxProps} clearBitmap={clearBitmap} />
             
             <BoxFeedPoint {...FeedPointBoxProps} />

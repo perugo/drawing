@@ -40,24 +40,26 @@ export const handleKeyDown = (type) => (e) => {
   }
 };
 export const setToDefault = ( defaultAmplitudeScaler, setStrAmplitudeScaler) => {
-  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum } = defaultAmplitudeScaler;
+  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = defaultAmplitudeScaler;
   const stringAmplitudeScaler = {
     simulationNum: simulationNum.toString(),
     slope: slope.toString(),
     shift: shift.toString(),
     peakPosition: peakPosition.toString(),
-    widthFactor: widthFactor.toString()
+    widthFactor: widthFactor.toString(),
+    Select:Select
   };
   setStrAmplitudeScaler(stringAmplitudeScaler);
 }
 export const updateStringStates = (amplitudeScaler, setStrAmplitudeScaler) => {
-  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum } = amplitudeScaler;
+  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = amplitudeScaler;
   setStrAmplitudeScaler({
     simulationNum: simulationNum.toString(),
     slope: slope.toString(),
     shift: shift.toString(),
     peakPosition: peakPosition.toString(),
-    widthFactor: widthFactor.toString()
+    widthFactor: widthFactor.toString(),
+    Select,Select
   });
 }
 export function isStateComplete(amplitudeScaler, setting) {

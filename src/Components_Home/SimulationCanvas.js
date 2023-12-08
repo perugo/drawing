@@ -54,12 +54,11 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
 
   useEffect(() => {
     movevideoRef.current = true;
-    console.log(RECT.width+" ::: "+!checker_FDTDINPUT(FDTD_Input));
     if (!checker_FDTDINPUT(FDTD_Input) || RECT.width === 0) return;
     console.log("FDTD_INPUT useEffect");
     FDTD2D_PMLRef.current = new FDTD2D_PML(FDTD_Input);
     showSimulationRef.current = true;
-    const {nx:inputNx,ny:inputNy,lpml:inputLpml,color,amplitudeScaler}=FDTD_Input;
+    const {nx:inputNx,ny:inputNy,lpml:inputLpml,color,amplitudeScaler,bitmap}=FDTD_Input;
     const {simulationNum}=amplitudeScaler;
     const {colorThreshold,colorTransitionIndex}=color;
     filmcounter = 0;
@@ -67,10 +66,11 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
     nx = inputNx;
     ny = inputNy;
     lpml = inputLpml;
+    console.log(nx+" : "+ny+" "+dx);
     dx = RECT.width / (nx - lpml * 2);
     filmnum =simulationNum / drawcanvasrate;
     requestAnimationFrame(Program);
-    drawbackground(ctxbackgroundRef.current, simulationData.bitmap);
+    drawbackground(ctxbackgroundRef.current,bitmap);
   }, [FDTD_Input]);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
     for (var i = 0; i < nx - lpml * 2; i++) {
       for (var n = 0; n < ny - lpml * 2; n++) {
         ctx.fillStyle = MEDIUM_COLOR[bitmap[i][n]];
-        ctx.fillRect(i * dx, n * dx, dx + 1, dx + 1);
+        ctx.fillRect((i-lpml) * dx, (n-lpml) * dx, dx + 1, dx + 1);
       }
     }
   }

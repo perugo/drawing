@@ -13,7 +13,10 @@ export function makeFDTDInput(data) {
   let c = 3.0e8;
   let lpml = 20;
   const { fieldX, fieldY, split, freq } = data.setting;
-  let inputbitmap = data.bitmap;
+  let xnum = Math.floor(split);
+  let dx=fieldX/split;
+  let ynum = Math.ceil(fieldY / dx);
+  let inputbitmap = check_EMPTYBITMAP(data.bitmap, xnum, ynum);
   let feedPoint = data.feedPoint;
   let medium = data.medium;
   let lattice_width = fieldX / split;
@@ -26,29 +29,12 @@ export function makeFDTDInput(data) {
   let order = 4;
   let M = 8;
   let numbers = new Set();
-  let mint = -1;
-  let minv = -1;
+  const dt=(dx / (c * Math.sqrt(2))) * 0.98;
+  const v=c;
   let bitmap = makeBitmap();
-  medium.forEach((item, index) => {
-    if (!numbers.has(index)) return;
-    let root = Math.sqrt(item.DielectricConstant * item.MagneticConstant);
-    if (root > 10 || root < 0.1) { return; }
-    let v_candidate = c / root;
-    let dt_candidate = (lattice_width / (v_candidate * Math.sqrt(2))) * 0.9;
-    if (mint > dt_candidate) {
-      mint = dt_candidate;
-      minv = v_candidate;
-    }
-  });
-  if (mint == -1) {
-    mint = (lattice_width / (c * Math.sqrt(2))) * 0.9;
-    minv = c / Math.sqrt(1.0);
-  }
   medium.forEach((m) => {
-    MediumsClass.push(makeMedium(m, freq, mint, lattice_width, lpml, order, M));
+    MediumsClass.push(makeMedium(m, freq,dt,lattice_width, lpml, order, M));
   });
-  let dt = mint;
-  let v = minv;
 
 
   feedPoint.forEach((f) => {
@@ -74,6 +60,8 @@ export function makeFDTDInput(data) {
   return obj;
 
   function makeBitmap() {
+    console.log("inputbitmap is");
+    console.log(inputbitmap);
     var x = Array.from({ length: nx }).map(() => Array.from({ length: ny }).fill(0));
     for (let i = 0; i < nx_pec; i++) {
       for (let n = 0; n < ny_pec; n++) {
@@ -83,10 +71,9 @@ export function makeFDTDInput(data) {
     }
     return x;
   }
-  function makeMedium(m, freq, dt, lattice_width, lpml, order, M) {
+  function makeMedium(m, freq,dt, lattice_width, lpml, order, M) {
     let E0 = 8.8541878128e-12;  //真空中の誘電率[F/m]
     let M0 = 1.2566370621e-6; //真空中の透磁率 [H/m]
-
     const {
       DielectricConstant, //複素誘電率実部　ε`エプシロンダッシュ
       DielectricLoss, //複素誘電率虚部　ε``エプシロンダブルダッシュ
@@ -125,24 +112,29 @@ export function makeFDTDInput(data) {
     }
     return obj;
   }
+
 }
-
+function check_EMPTYBITMAP(bitmap, xnum, ynum) {
+  let checker = false;
+  if (bitmap.length !== xnum) checker = true;
+  if (checker || !bitmap.every(subArray => Array.isArray(subArray) && subArray.length === ynum)) checker = true;
+  if (checker) {
+    console.log("before after");
+    console.log(bitmap);
+    bitmap = Array.from({ length: xnum }).map(() => Array.from({ length: ynum }).fill(0));
+    console.log(bitmap);
+  }
+  return bitmap;
+}
 export function checker_FDTDINPUT(obj1) {
-  if (!obj1){
-    console.log("オブジェクトがnullです");
+  if (!obj1) {
     return false;
-  } 
+  }
   const fields = ['nx', 'ny', 'lpml', 'lattice_width', 'bitmap', 'dt',
-   'v', 'order', 'freq', 'FeedPoints', 'Mediums', 'color', 'amplitudeScaler'];
-   const missingFields = fields.filter(field => !obj1.hasOwnProperty(field));
+    'v', 'order', 'freq', 'FeedPoints', 'Mediums', 'color', 'amplitudeScaler'];
+  const missingFields = fields.filter(field => !obj1.hasOwnProperty(field));
 
-   if (missingFields.length > 0) {
-     console.log("足りないフィールド:", missingFields.join(', '));
-     return false;
-   }
- 
-   console.log("結果は"+!fields.every(field => obj1.hasOwnProperty(field)));
-   if (!fields.every(field => obj1.hasOwnProperty(field))) {
+  if (!fields.every(field => obj1.hasOwnProperty(field))) {
     return false;
   }
   return true;
@@ -150,18 +142,10 @@ export function checker_FDTDINPUT(obj1) {
 export function checker_SIMULATIONDATA(obj) {
   if (!obj) return false;
 
-  const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
-  // Before checking bitmap, make sure that the necessary setting fields exist
-  if (!obj.setting || !settingFields.every(field => typeof obj.setting[field] === 'number')) {
-    return false;
-  }
-  const xnum = obj.setting.split;
-  const ynum = Math.ceil(obj.setting.fieldY / (obj.setting.fieldX / xnum));
   const requiredFields = {
     bitmap: (data) => {
       if (!Array.isArray(data)) return false;
-      if (data.length !== xnum) return false;
-      return data.every(subArray => Array.isArray(subArray) && subArray.length === ynum);
+      return true;
     },
     setting: (data) => {
       const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
@@ -194,13 +178,14 @@ export function checker_SIMULATIONDATA(obj) {
   // Check if each required property exists and is valid
 
   for (const [key, validator] of Object.entries(requiredFields)) {
-    if (!validator(obj[key])){
-      console.log("obj:wrong " +key);
+    if (!validator(obj[key])) {
       return false;
-    } 
+    }
   }
   console.log("checkerSIMULATIONDATA was true");
   return true;
+
+
 }
 export class ColorCode {
   m;

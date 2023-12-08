@@ -7,7 +7,7 @@ export function checker_DRAWDATA(obj1) {
     bitmap: (data) => data && Array.isArray(data),
     setting: (data) => {
       if (!data) return false;
-      const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
+      const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
       return settingFields.every(field => typeof data[field] === 'number');
     },
     feedPoint: (data) => data && Array.isArray(data) && data.length > 0 && data.every(Item => {
@@ -36,7 +36,7 @@ export function checker_NOCHANGE(obj1, obj2) {
   return true;
 }
 
-export function compare_ONLYLAMBDACHANGE(obj1, obj2) {
+export function compare_ONLYFREQCHANGE(obj1, obj2) {
   if (!obj1 || !obj2) return false;
   const { medium: medium1, feedPoint: feedPoint1, setting: setting1 } = obj1;
   const { medium: medium2, feedPoint: feedPoint2, setting: setting2 } = obj2;
@@ -44,7 +44,7 @@ export function compare_ONLYLAMBDACHANGE(obj1, obj2) {
   if (!check_MEDIUM_NOCHANGE(medium1, medium2) || !check_FEEDPOINT_NOCHANGE(feedPoint1, feedPoint2)) return false;
   const samesettingFields = ['fieldX', 'fieldY', 'split'];
   if (!fieldsMatch(setting1, setting2, samesettingFields)) return false;
-  return setting1.lambda !== setting2.lambda;
+  return setting1.freq !== setting2.freq;
 }
 export function compare_ONLYMEDIUMCHANGE(obj1, obj2) {
   if (!obj1 || !obj2) return false;
@@ -79,7 +79,7 @@ export function compare_ONLYFEEDPOINTCHANGE(obj1, obj2) {
 
 export function check_SETTING_NOCHANGE(obj1, obj2) {
   if (!obj1 || !obj2) return false;
-  const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
+  const settingFields = ['fieldX', 'fieldY', 'split', 'freq'];
   if (fieldsMatch(obj1, obj2, settingFields)) return true;
   return false;
 }

@@ -28,7 +28,7 @@ const ContainerHome = styled.div`
   visibility: ${props => props.$show ? 'visible' : 'hidden'};
   opacity: ${props => props.$show ? 1 : 0};
   flex-direction:row;
-  @media screen and (max-width: 1250px) {
+  @media screen and (max-width: 950px) {
     flex-direction: column;
   }
 `
@@ -53,7 +53,6 @@ export const Home = () => {
   const [bitmap, setBitmap] = useState(BITMAP);
   const [feedPoint, setFeedPoint] = useState(FEEDPOINT);
   const [amplitudeScaler, setAmplitudeScaler] = useState(AMPLITUDESCALER);
-  //const [colorThreshold, setColorThreshold] = useState(COLORTHRESHOLD);
   const [drawData, setDrawData] = useState({});
   const [simulationData, setSimulationData] = useState({});
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -62,7 +61,6 @@ export const Home = () => {
   const [showWindow, setShowWindow] = useState("home");
   const [LinkBread, setLinkBread] = useState([]);
   const [moveVideo, setMoveVideo] = useState(false);
-  //const [colorGradientIndex,setColorGradientIndex]=useState(COLORGRADIENTINDEX);
   const [color,setColor]=useState(COLOR);
   const drawCanvasProps = {
     drawData,
@@ -148,6 +146,7 @@ export const Home = () => {
     setFeedPoint(FEEDPOINT);
     setMedium(MEDIUM);
     setSelectedIndex(0);
+    setDrawData({ ...drawData, clearBitmap: true });
   }
   const componentMap = {
     settingMedium: <SettingMedium {...settingMediumProps} />,
@@ -181,17 +180,3 @@ export const Home = () => {
     </Container>
   )
 };
-
-export function checker_DRAWDATA(obj1) {
-  if (!obj1) return false;
-
-  const requiredFields = {
-    setting: (data) => {
-      if (!data) return false;
-      const settingFields = ['fieldX', 'fieldY', 'split', 'lambda'];
-      return settingFields.every(field => typeof data[field] === 'number');
-    }
-  }
-  if (!Object.keys(requiredFields).every(key => requiredFields[key](obj1[key]))) return false;
-  return true;
-}

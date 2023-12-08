@@ -5,7 +5,7 @@ import { React } from 'react';
 import {
   checker_DRAWDATA,
   checker_NOCHANGE,
-  compare_ONLYLAMBDACHANGE,
+  compare_ONLYFREQCHANGE,
   compare_RectNOCHANGE,
   check_DOMAINGRID_NOCHANGE,
   maker_FEEDPOINT,
@@ -40,7 +40,7 @@ var xnum;
 var ynum;
 var fieldX;
 var fieldY;
-var lambda;
+var freq;
 let medium;
 const MEDIUM_COLOR = ['rgb(255,255,255)', 'rgb(0,0,0)', 'rgb(0,0,200)', 'rgb(0,255,0)', 'rgb(255,2250,0)'];
 
@@ -75,16 +75,16 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
     if (checker_NOCHANGE(drawData, prevDrawDataRef.current) && compare_RectNOCHANGE(prevRect, width, height)) {
       console.log("DOMAIN : no change");
       return;
-    } else if (compare_ONLYLAMBDACHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
-      console.log("DOMAIN : only lambda");
-      lambda = drawData.setting.lambda;
+    } else if (compare_ONLYFREQCHANGE(prevDrawDataRef.current, drawData) && compare_RectNOCHANGE(prevRect, width, height)) {
+      console.log("DOMAIN : only freq");
+      freq = drawData.setting.freq;
       draw_canvas();
     }
     else {
       console.log("DOMAIN : everythin else");
       setUpdateCounter(c => c + 1);
       let setting = drawData.setting;
-      lambda = setting.lambda;
+      freq = setting.freq;
       fieldX = setting.fieldX;
       let dx = setting.fieldX / setting.split;
       xnum = setting.split;
@@ -102,8 +102,9 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
       const canvas1 = canvas1Ref.current;
       const ctx1 = canvas1.getContext("2d");
       line_triangle(0, 0, 0, height, 10,ctx1,getStrLambda(fieldY));
+
       line_triangle(0, height, width, height, 12,ctx1, getStrLambda(fieldX));
-      sentence(20, width, height - 20 * 3,ctx1, `X-Axis Resolution ${xnum}`);
+      sentence(20, width, height - 20 * 3,ctx1, `x軸の分解精度 ${xnum}`);
     }
     prevDrawDataRef.current = drawData;
     prevRect.current = { width: width, height: height };
@@ -166,9 +167,10 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
       const scaleFactor = width / xnum;
       const mediumIndex = bitmap[fPoint.x][fPoint.y];
       const m = medium[mediumIndex];
+
       if (m.DielectricLoss !== 0 || m.MagneticLoss !== 0) return;
 
-      let realRadius = lambda * width / fieldX;
+      let realRadius = 3e8/freq * width / fieldX;
       realRadius = realRadius / Math.sqrt(m.DielectricConstant * m.MagneticConstant);
       const numm = (height / realRadius) > (width / realRadius) ? height / realRadius : width / realRadius;
       let numCircles = (numm > 40) ? 40 : numm;

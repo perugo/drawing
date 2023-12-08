@@ -2,7 +2,7 @@ export function maker_RECT(set) {
   const { split: xnum, fieldY, fieldX } = set;
   const ynum = Math.ceil(fieldY / (fieldX / xnum));
 
-  const availableHeight = window.innerHeight - 53;
+  const availableHeight = window.innerHeight - 45;
   const availableWidth = window.innerWidth - 500;
 
   // Calculate the maximum canvasDx that satisfies both conditions

@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef } from 'react';
-import 'rc-slider/assets/index.css';
+
+import {
+  Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
+  ColumnLayout, GridColumn, FrontHeaderLeft, SVGInner, StyledImg
+} from './StyledBoxComponents';
 
 const FEEDPOINT_COLOR = [
   'rgb(255, 0, 0)',   // Lighter 赤色 (Red)
@@ -12,146 +16,27 @@ const FEEDPOINT_COLOR = [
   'rgb(100, 200, 200)',   // Lighter ティール色 (Teal)
   'rgb(200, 100, 100)'    // Lighter 濃紅色 (Deep Red)
 ];
-const MainContentWrapper = styled.div`
-`
-const Content = styled.div`
-flex-direction:column;
-display:flex;
-`
-
-const Front = styled.div`
-border-radius: 5px;
-overflow: hidden;
-  box-sizing:border-box;
-  background-color: rgb(255,255,255);
-  border-spacing:0;
-  cursor:auto;
-  direction 1tr;
-  empty-cells:show;
-  hyphens:none;
-  tab-size:8;
-  text-align:left;
-  text-indent:0;
-  text-transform:none;
-  widows:2;
-  word-spacing:normal;
-  font-weight:400;
-  -webkit-font-smoothing:auto;
-  word-break:bread-word;
-  display:block;
-  position:relative;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-  &::before{
-    content:"";
-    position:absolute;
-    left:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    border-top: 1px solid #eaeded;
-    z-index:1;
-  }
-  &::after{
-    content:"";
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    box-shadow:0 1px 1px 0 rgba(0,28,36,0,3) 1px 1px 1px 1px 0 rgba(0,28,36,0.15), -1px 1px 1px 0 rgba(0,28,36,0.15);
-    mix-blend-mode:multiply;
-  }
-`
-
-const FrontHeader = styled.div`
-  border-bottom:1px solid #eaeded;
-`
-const FrontHeaderInner = styled.div`
- width:100%;
- background-color: rgb(246,246,246);
- display:flex;
- padding:3px 20px 2px 20px;
- box-sizing:border-box;
- border:none;
- line-height 22px;
- tex-align:left;
- justify-content:space-between;
-`
-const TitleWrapper = styled.div`
-flex-wrap:wrap;
-justify-content:space-between;
-display:flex;
-align-content:center;
-font-size:18px;
-min-width:0;
-color:#16191f;
-margin-right:30px;
-`
-const CustomH3 = styled.span`
- font-size:18px;
- font-weight:500;
- font-family:Arial,sans-serif, Helvetica,Circular;
- -webkit-font-smoothing:auto;
- display:inline;
- margin-right:8px;
- margin:0px;
- color:rgb(40,40,40);
-`
 
 
-const FrontBody = styled.div`
-position:relative;
-padding:10px 10px 12px 10px;
-
-`
-
-const ColumnLayout = styled.div`
-  margin:-10px;
-  display:flex;
-  flex-wrap:wrap;
-  color::#16191f;
-  box-sizing:border-box;
-  border-collapse:separete;
-  direction:1tr;
-  flex-direction:column;
 
 
-  cursor:auto;
-  direction:1tr;
-  text-align:left;
-  font-size:18px;
-  line-height:20px;
-  color:#16191f;
-  font-weight:500;
-  font-family:times new roman,serif;
-`
-const GridColumn = styled.div`
-  padding:10px 10px 5px 10px;
-  box-sizing:border-box;
-  display:flex;
-  position:relative;
-  flex-direction:column;
-`
-
-//,"Helvetica Neue",Roboto,Arial,sans-serif
-const SpanText = styled.span`
+const FeedButton = styled.span`
 font-size:15px;
 font-weight:500;
-line-height:22px;
+line-height:1.3;
+font-size:15px;
 color:rgb(40,40,40);
 margin-bottom:2px;
+line-height:1.3;
 `
-const Button = styled.button`
+
+const FeedButtonContainer = styled.button`
 background-color:rgb(255,255,255);
 border-color:rgb(0,0,0);
 border-style:solid;
 border-width:1px;
-border-radius:3px;
+border-radius:2px;
 padding:0px 15px;
-line-height:1.5;
 display:flex;
 justify-content:center;
 &:hover {
@@ -163,6 +48,7 @@ justify-content:center;
 }
 cursor:pointer;
 `
+
 const ShiftButtonWrapper = styled.div`
 background-color:rgb(230,230,230);
 border-color:rgb(100,100,100);
@@ -186,11 +72,6 @@ const MediumColorIcon = styled.div`
   border:1px solid black;
 `
 
-const FrontHeaderLeft = styled.div`
-line-height:none;
-display:flex;
-flex-direction:row;
-`
 const Label = styled.div`
   margin-left:15px;
   padding-right:5px;
@@ -200,7 +81,7 @@ const Label = styled.div`
 const FeedPointGridArray = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 3px;
   margin:auto;
 `
 const FeedPointItem = styled.div`
@@ -216,23 +97,9 @@ const SVGWrapper = styled.div`
   display: flex;
 `;
 const CoordinateShiftSVGWrapper = styled.div`
-  height: 12px;
+  height: 11px;
   width: 20px;
   display: flex;
-`;
-const SVGInner = styled.div`
-  position: relative;
-  width: inherit;
-  height: inherit;
-  margin: auto;
-`;
-const StyledImg = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2; // Ensure the image is always on top
 `;
 const InputText = styled.input`
   width:50px;
@@ -240,6 +107,7 @@ const InputText = styled.input`
   box-sizing: border-box;
   font-size:16px;
   padding:2px;
+  height:fit-content;
 `
 const Garbage_Inner = styled.div`
   position:relative;
@@ -259,7 +127,6 @@ width: 100%;              // This ensures it takes full width available
 const CoordinateShiftButtonWrapper = styled.div`
 padding-left:3px;
 height:100%;
-width:20px;
 display:flex;
 flex-direction:column;
 `
@@ -445,130 +312,121 @@ export const BoxFeedPoint = ({ setting, feedPoint, setFeedPoint }) => {
     );
   };
   return (
-    <div>
-      <MainContentWrapper>
-        <Content>
-          <Front>
-            <FrontHeader>
-              <FrontHeaderInner>
-                <FrontHeaderLeft>
-                  <TitleWrapper>
-                    <CustomH3>Adding Wave Sources</CustomH3>
-                  </TitleWrapper>
-                </FrontHeaderLeft>
-              </FrontHeaderInner>
-            </FrontHeader>
+    <Box>
+      <FrontHeader>
+        <FrontHeaderInner>
+          <FrontHeaderLeft>
+            <TitleWrapper>
+              <CustomH3>波源の追加</CustomH3>
+            </TitleWrapper>
+          </FrontHeaderLeft>
+        </FrontHeaderInner>
+      </FrontHeader>
 
-            <FrontBody>
-              <ColumnLayout>
-                <GridColumn>
-                  <FeedPointGridArray>
-                    {Array.isArray(strFeedPoint) && (strFeedPoint.map((column, index) => (
-                      <FeedPointItem key={index}>
-                        {index === 0 && (
-                          <Garbage_Inner></Garbage_Inner>
-                        )}
-                        {index !== 0 && (
-                          <Garbage_Inner
-                            onMouseEnter={() => handleHover(index)}
-                            onMouseLeave={handleLeave}
-                            onClick={() => delete_Onclick(index)}
-                            onChange={(e) => handleInputChange(index, 'DielectricConstant', e.target.value)}
-                          >
-                            <SVGWrapper style={{ borderRadius: "5px", width: "100%", height: "100%", backgroundColor: hoveredItemId === index ? "gray" : "white" }}>
-                              <SVGInner>
-                                <StyledImg
-                                  src={`${process.env.PUBLIC_URL}/svgtrash.svg`}
-                                  alt="Trash Icon"
-                                />
-                              </SVGInner>
-                            </SVGWrapper>
-                          </Garbage_Inner>
-                        )}
+      <FrontBody>
+        <ColumnLayout>
+          <GridColumn>
+            <FeedPointGridArray>
+              {Array.isArray(strFeedPoint) && (strFeedPoint.map((column, index) => (
+                <FeedPointItem key={index}>
+                  {index === 0 && (
+                    <Garbage_Inner></Garbage_Inner>
+                  )}
+                  {index !== 0 && (
+                    <Garbage_Inner
+                      onMouseEnter={() => handleHover(index)}
+                      onMouseLeave={handleLeave}
+                      onClick={() => delete_Onclick(index)}
+                      onChange={(e) => handleInputChange(index, 'DielectricConstant', e.target.value)}
+                    >
+                      <SVGWrapper style={{ borderRadius: "5px", width: "100%", height: "100%", backgroundColor: hoveredItemId === index ? "gray" : "white" }}>
+                        <SVGInner>
+                          <StyledImg
+                            src={`${process.env.PUBLIC_URL}/svgtrash.svg`}
+                            alt="Trash Icon"
+                          />
+                        </SVGInner>
+                      </SVGWrapper>
+                    </Garbage_Inner>
+                  )}
 
-                        <MediumColorIcon style={{ backgroundColor: column.color }}></MediumColorIcon>
-                        <Label>x: </Label>
-                        <InputText
-                          tabIndex={(0) + index + 1} // Set tabIndex based on the index
-                          maxLength="3"
-                          type="text"
-                          value={column.x}
-                          onChange={(e) => handleInputChange(index, 'x', e.target.value)}
-                          onKeyDown={(e) => {
-                            handleKeyDown(e);
-                          }}
-                        />
-                        <CoordinateShiftButton
-                          index={index}
-                          coordinateType="x"
-                          handleMouseDown={handleMouseDown}
-                          handleMouseUp={handleMouseUp}
-                        />
-                        <Label>y: </Label>
-                        <InputText
-                          tabIndex={strFeedPoint.length + index + 1} // Set tabIndex based on the index
-                          maxLength="3"
-                          type="text"
-                          value={column.y}
-                          onChange={(e) => handleInputChange(index, 'y', e.target.value)}
-                          onKeyDown={(e) => {
-                            handleKeyDown(e);
-                          }}
-                        />
-                        <CoordinateShiftButton
-                          index={index}
-                          coordinateType="y"
-                          handleMouseDown={handleMouseDown}
-                          handleMouseUp={handleMouseUp}
-                        />
-                        <Label style={{ paddingTop: "2px" }}>θ[deg]: </Label>
-                        <InputText
-                          tabIndex={(strFeedPoint.length * 2) + index + 1} // Set tabIndex based on the index
-                          maxLength="3"
-                          type="text"
-                          value={column.phase}
-                          onChange={(e) => handleInputChange(index, 'phase', e.target.value)}
-                          onKeyDown={(e) => {
-                            handleKeyDown(e);
-                          }}
-                        />
-                        <CoordinateShiftButton
-                          index={index}
-                          coordinateType="phase"
-                          handleMouseDown={handleMouseDown}
-                          handleMouseUp={handleMouseUp}
-                        />
-                      </FeedPointItem>
-                    )))}
-                    <FeedButtonItem>
+                  <MediumColorIcon style={{ backgroundColor: column.color }}></MediumColorIcon>
+                  <Label>x: </Label>
+                  <InputText
+                    tabIndex={(0) + index + 1} // Set tabIndex based on the index
+                    maxLength="3"
+                    type="text"
+                    value={column.x}
+                    onChange={(e) => handleInputChange(index, 'x', e.target.value)}
+                    onKeyDown={(e) => {
+                      handleKeyDown(e);
+                    }}
+                  />
+                  <CoordinateShiftButton
+                    index={index}
+                    coordinateType="x"
+                    handleMouseDown={handleMouseDown}
+                    handleMouseUp={handleMouseUp}
+                  />
+                  <Label>y: </Label>
+                  <InputText
+                    tabIndex={strFeedPoint.length + index + 1} // Set tabIndex based on the index
+                    maxLength="3"
+                    type="text"
+                    value={column.y}
+                    onChange={(e) => handleInputChange(index, 'y', e.target.value)}
+                    onKeyDown={(e) => {
+                      handleKeyDown(e);
+                    }}
+                  />
+                  <CoordinateShiftButton
+                    index={index}
+                    coordinateType="y"
+                    handleMouseDown={handleMouseDown}
+                    handleMouseUp={handleMouseUp}
+                  />
+                  <Label style={{ paddingTop: "2px" }}>θ[deg]: </Label>
+                  <InputText
+                    tabIndex={(strFeedPoint.length * 2) + index + 1} // Set tabIndex based on the index
+                    maxLength="3"
+                    type="text"
+                    value={column.phase}
+                    onChange={(e) => handleInputChange(index, 'phase', e.target.value)}
+                    onKeyDown={(e) => {
+                      handleKeyDown(e);
+                    }}
+                  />
+                  <CoordinateShiftButton
+                    index={index}
+                    coordinateType="phase"
+                    handleMouseDown={handleMouseDown}
+                    handleMouseUp={handleMouseUp}
+                  />
+                </FeedPointItem>
+              )))}
+              <FeedButtonItem>
 
-                      {strFeedPoint.length !== 8 && (
-                        <Button onClick={addFeedPoint}>
-                          <SpanText >Add</SpanText>
-                        </Button>
-                      )}
-                      {strFeedPoint.length >= 3 && (
-                        <Button style={{ marginLeft: "10px" }} onClick={() => onClickFormLine()}>
-                          <SpanText>Align with </SpanText>
-                          <MediumColorIcon style={{ backgroundColor: "red" }} />
-                          <SpanText> and </SpanText>
-                          <MediumColorIcon style={{ backgroundColor: strFeedPoint[1].color }}></MediumColorIcon>
-<<<<<<< HEAD
-=======
-                          <SpanText >に続けて配置</SpanText>
->>>>>>> 9658062cf1b2575899fb38da6755ea94df4cbd13
-                        </Button>
-                      )}
-                    </FeedButtonItem>
+                {strFeedPoint.length !== 8 && (
+                  <FeedButtonContainer onClick={addFeedPoint}>
+                    <FeedButton >追加</FeedButton>
+                  </FeedButtonContainer>
+                )}
+                {strFeedPoint.length >= 3 && (
+                  <FeedButtonContainer style={{ marginLeft: "10px" }} onClick={() => onClickFormLine()}>
+                    <MediumColorIcon style={{ backgroundColor: "red", height: "17px", width: "19px" }} />
+                    <FeedButton style={{marginTop:"2px"}}> と </FeedButton>
+                    <MediumColorIcon style={{ backgroundColor: strFeedPoint[1].color, height: "17px", width: "19px" }}></MediumColorIcon>
+                    <FeedButton style={{marginTop:"2px"}}>のように並べる</FeedButton>
 
-                  </FeedPointGridArray>
-                </GridColumn>
-              </ColumnLayout>
-            </FrontBody>
-          </Front>
-        </Content>
-      </MainContentWrapper>
-    </div>
+                  </FeedButtonContainer>
+                )}
+              </FeedButtonItem>
+
+            </FeedPointGridArray>
+          </GridColumn>
+        </ColumnLayout>
+      </FrontBody>
+    </Box>
   )
 };
 function clamp(value, min, max) {

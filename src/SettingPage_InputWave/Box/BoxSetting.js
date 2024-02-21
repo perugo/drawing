@@ -1,131 +1,12 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { validateInput, checker_amplitudeScaler, handleKeyDown, setToDefault, updateStringStates, isStateComplete, isValidNumber } from './BoxSetting_helper';
+import { validateInput, handleKeyDown, updateStringStates, isStateComplete, isValidNumber } from './BoxSetting_helper';
 
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
-const ColumnTitle = styled.div`
-  font-size:16px;
-  font-weight:500;
-  line-height:1.2;
-  color:rgb(100,100,100);
-  margin-bottom:2px;
-  font-family:times new roman,serif;
-  font-family:"times new roman", serif;
-`
-//,"Helvetica Neue",Roboto,Arial,sans-serif
-const SpanText = styled.span`
-font-size:15px;
-font-weight:500;
-line-height:22px;
-color:rgb(40,40,40);
-margin-bottom:2px;
-`
-const ButtonWrapperRight = styled.div`
-display: flex;
-`
-const Button = styled.button`
-background-color:rgb(255,255,255);
-border-color:rgb(0,0,0);
-border-style:solid;
-border-width:1px;
-border-radius:3px;
-padding:0px 15px;
-line-height:1.5;
-display:flex;
-justify-content:center;
-&:hover {
-  border-color:rgb(100,100,100);
-  background-color:rgb(240,240,240);
-}
-&:active{
-  background-color:rgb(225,225,225);
-}
-cursor:pointer;
-`
-const ContentBodyColumn = styled.div`
-  margin-bottom:7px;
-  position:relative;
-  display: inline-block;
-  display:flex;
-  flex-direction:column;
-`
-
-const ButtonSmallWrapper = styled.div`
-  text-align: center;
-  display: flex;
-  align-items: center;
-`
-const ButtonSmall = styled.div`
-  backface-visibility: hidden;
-  background-color:rgb(255,153,0);
-  border: 0;
-  box-sizing: border-box;
-  color:rgb(0,0,0);
-  cursor: pointer;
-  display: inline-block;
-  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
-  font-weight: 500;
-  font-size:16px;
-  line-height:1.3;
-  position: relative;
-  text-align: left;
-  text-decoration: none;
-  letter-spacing:.25px;
-  border-radius:4px;
-  padding: 0px 17px;
-  transition: transform .2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-
-  &:hover{
-    background-color:rgb(236,114,17);
-  }
-  &:active{
-    background-color:#EB5F07;
-}
-`
-const ButtonReturnWrapper = styled.div`
-  text-align: center;
-  display: flex;
-  padding-top:14px;
-  align-items: center;
-  margin:auto;
-`
-const ButtonReturn = styled.div`
-  backface-visibility: hidden;
-  background-color:rgb(255,153,0);
-  border: 0;
-  box-sizing: border-box;
-  color:rgb(0,0,0);
-  cursor: pointer;
-  display: inline-block;
-  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
-  font-weight: 500;
-  font-size:18px;
-  line-height:1.9;
-  position: relative;
-  text-align: left;
-  text-decoration: none;
-  letter-spacing:.25px;
-  border-radius:4px;
-  padding: 0px 22px;
-  transition: transform .2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-
-  &:hover{
-    background-color:rgb(236,114,17);
-  }
-  &:active{
-    background-color:#EB5F07;
-}
-`
 const InputText = styled.input`
 width:120px;
   text-align: right;
@@ -164,14 +45,14 @@ const SectionContainer = styled.div`
 `;
 export const BoxSetting = ({
   amplitudeScaler, setAmplitudeScaler,
-  setShowWindow }) => {
+   }) => {
   const [strAmplitudeScaler, setStrAmplitudeScaler] = useState({});
   const timeoutIdRef = useRef();
   const [inputFields, setInputFields] = useState([]);
   useEffect(() => {
     if (amplitudeScaler.Select === undefined) return;
     updateStringStates(amplitudeScaler, setStrAmplitudeScaler);
-    if (amplitudeScaler.Select == 'Rise') {
+    if (amplitudeScaler.Select == 'SineWave') {
       setInputFields(inputFields1);
     } else {
       setInputFields(inputFields2);
@@ -201,9 +82,9 @@ export const BoxSetting = ({
       let updated = {
         simulationNum: isValidNumber(current.simulationNum) ? parseInt(current.simulationNum) : amplitudeScaler.simulationNum,
         Select: amplitudeScaler.Select,
-        Rise: {
-          slope: isValidNumber(current.slope) ? roundToFourSignificantFigures(current.slope) : amplitudeScaler.Rise.slope,
-          shift: isValidNumber(current.shift) ? roundToFourSignificantFigures(current.shift) : amplitudeScaler.Rise.shift
+        SineWave: {
+          slope: isValidNumber(current.slope) ? roundToFourSignificantFigures(current.slope) : amplitudeScaler.SineWave.slope,
+          shift: isValidNumber(current.shift) ? roundToFourSignificantFigures(current.shift) : amplitudeScaler.SineWave.shift
         },
         Pulse: {
           peakPosition: isValidNumber(current.peakPosition) ? roundToFourSignificantFigures(current.peakPosition) : amplitudeScaler.Pulse.peakPosition,

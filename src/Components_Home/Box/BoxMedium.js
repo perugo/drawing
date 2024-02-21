@@ -6,7 +6,7 @@ import {
   RadioButton, FrontHeaderInner, TitleWrapper, CustomH3,
   ColumnLayout, GridColumn, OutlinedButtonContainer,OutlinedButtonText,
   ButtonOrangeContainer, ButtonOrange, SVGInner, StyledImg,RadioButtonInput
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 
 

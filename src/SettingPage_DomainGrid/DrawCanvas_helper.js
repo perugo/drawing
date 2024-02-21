@@ -52,7 +52,7 @@ export function compare_ONLYMEDIUMCHANGE(obj1, obj2) {
   const { medium: medium2, feedPoint: feedPoint2, setting: setting2 } = obj2;
 
   if (!check_SETTING_NOCHANGE(setting1, setting2) || !check_FEEDPOINT_NOCHANGE(feedPoint1, feedPoint2)) return false;
-  if (check_MEDIUM_NOCHANGE(medium1, medium2)) return true;
+  if (!check_MEDIUM_NOCHANGE(medium1, medium2)) return true;
 
   return false;
 }
@@ -60,7 +60,7 @@ export function compare_ONLYDOMAINGRIDCHANGE(obj1, obj2) {
   if (!obj1 || !obj2) return false;
   if (!check_FEEDPOINT_NOCHANGE(obj1.feedPoint, obj2.feedPoint) || !check_MEDIUM_NOCHANGE(obj1.medium, obj2.medium)) return false;
 
-  return check_DOMAINGRID_NOCHANGE(obj1.setting, obj2.setting);
+  return !check_DOMAINGRID_NOCHANGE(obj1.setting, obj2.setting);
 }
 
 export function compare_ONLYFEEDPOINTCHANGE(obj1, obj2) {

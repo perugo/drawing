@@ -83,12 +83,12 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
     else {
       console.log("DOMAIN : everythin else");
       setUpdateCounter(c => c + 1);
-      let setting = drawData.setting;
-      freq = setting.freq;
-      fieldX = setting.fieldX;
-      let dx = setting.fieldX / setting.split;
-      xnum = setting.split;
-      ynum = Math.ceil(setting.fieldY / dx);
+      const {freq:inputFreq,fieldX:inputFieldX,fieldY:inputFieldY,split:split}=drawData.setting;
+      freq = inputFreq;
+      fieldX = inputFieldX;
+      xnum = split;
+      let dx = fieldX / xnum;
+      ynum = Math.ceil(inputFieldY / dx);
       fieldY = ynum * dx;
       canvasDx = width / xnum;
       canvasDy = canvasDx;
@@ -104,7 +104,9 @@ export const DrawCanvas = ({ drawData,originalDrawData }) => {
       line_triangle(0, 0, 0, height, 10,ctx1,getStrLambda(fieldY));
 
       line_triangle(0, height, width, height, 12,ctx1, getStrLambda(fieldX));
-      sentence(20, width, height - 20 * 3,ctx1, `x軸の分解精度 ${xnum}`);
+      sentence(20, width, height - 20 * 3,ctx1, `x軸の分割数 ${xnum}`);
+      sentence(20, 200, height/2 - 30,ctx1, `y軸の分割数 ${ynum}`);
+
     }
     prevDrawDataRef.current = drawData;
     prevRect.current = { width: width, height: height };

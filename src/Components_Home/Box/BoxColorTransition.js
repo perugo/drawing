@@ -6,7 +6,7 @@ import './../../Components/SliderOverride.css';
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft,SVGInner,StyledImg,RadioButton,RadioButtonInput
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 const SliderWrapper = styled.div`
 padding:0px;

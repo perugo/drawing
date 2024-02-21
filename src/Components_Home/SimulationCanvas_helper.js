@@ -11,7 +11,7 @@ export const useFDTDInput = (SimulationData) => {
 
 export function makeFDTDInput(data) {
   let c = 3.0e8;
-  let lpml = 20;
+  let pmlL = 20;
   const { fieldX, fieldY, split, freq } = data.setting;
   let xnum = Math.floor(split);
   let dx=fieldX/split;
@@ -19,36 +19,33 @@ export function makeFDTDInput(data) {
   let inputbitmap = check_EMPTYBITMAP(data.bitmap, xnum, ynum);
   let feedPoint = data.feedPoint;
   let medium = data.medium;
-  let lattice_width = fieldX / split;
   let nx_pec = Math.floor(split);
-  let ny_pec = Math.ceil(fieldY / lattice_width);
-  let nx = nx_pec + 2 * lpml;
-  let ny = ny_pec + 2 * lpml;
+  let ny_pec = Math.ceil(fieldY / dx);
+  let nx = nx_pec + 2 * pmlL;
+  let ny = ny_pec + 2 * pmlL;
   let MediumsClass = [];
   let FeedPointsClass = [];
   let order = 4;
   let M = 8;
-  let numbers = new Set();
   const dt=(dx / (c * Math.sqrt(2))) * 0.98;
-  const v=c;
   let bitmap = makeBitmap();
   medium.forEach((m) => {
-    MediumsClass.push(makeMedium(m, freq,dt,lattice_width, lpml, order, M));
+    MediumsClass.push(makeMedium(m, freq,dt,dx, pmlL, order, M));
   });
 
 
   feedPoint.forEach((f) => {
-    FeedPointsClass.push({ x: f.x + lpml, y: f.y + lpml, phase: f.phase });
+    FeedPointsClass.push({ x: f.x + pmlL, y: f.y + pmlL, phase: f.phase });
   })
+  console.log("THIS IS NOEL");
 
   const obj = {
     nx: nx,
     ny: ny,
-    lpml: lpml,
-    lattice_width: lattice_width,
+    pmlL: pmlL,
+    dx: dx,
     bitmap: bitmap,
     dt: dt,
-    v: v,
     order: order,
     freq: freq,
     FeedPoints: FeedPointsClass,
@@ -60,18 +57,15 @@ export function makeFDTDInput(data) {
   return obj;
 
   function makeBitmap() {
-    console.log("inputbitmap is");
-    console.log(inputbitmap);
     var x = Array.from({ length: nx }).map(() => Array.from({ length: ny }).fill(0));
     for (let i = 0; i < nx_pec; i++) {
       for (let n = 0; n < ny_pec; n++) {
-        x[i + lpml][n + lpml] = inputbitmap[i][n];
-        numbers.add(inputbitmap[i][n]);
+        x[i + pmlL][n + pmlL] = inputbitmap[i][n];
       }
     }
     return x;
   }
-  function makeMedium(m, freq,dt, lattice_width, lpml, order, M) {
+  function makeMedium(m, freq,dt, dx, pmlL, order, M) {
     let E0 = 8.8541878128e-12;  //真空中の誘電率[F/m]
     let M0 = 1.2566370621e-6; //真空中の透磁率 [H/m]
     const {
@@ -83,7 +77,7 @@ export function makeFDTDInput(data) {
 
     let pmlConductivtyMax; //PML層の誘電率の最大値（PML層は解析領域の外側に進むに従い誘電率が大きくなる）
     let pmlMagneticMax; //PML層の透磁率の最大値（PML層は解析領域の外側に進むに従い透磁率が大きくなる）
-    pmlConductivtyMax = -((E0 * DielectricConstant) / (2.0 * dt)) * (-M) * (order + 1.0) / lpml;
+    pmlConductivtyMax = -((E0 * DielectricConstant) / (2.0 * dt)) * (-M) * (order + 1.0) / pmlL;
     pmlMagneticMax = (M0 * MagneticConstant) / (E0 * DielectricConstant) * pmlConductivtyMax;
 
     let Permittivity; //誘電率 
@@ -96,9 +90,9 @@ export function makeFDTDInput(data) {
     MagneticConductivity = MagneticLoss * 2 * Math.PI * freq * M0;//導磁率
 
     let ae = (2 * Permittivity - ElectricConductivity * dt) / (2 * Permittivity + ElectricConductivity * dt);
-    let be = ((2 * dt) / (2 * Permittivity + ElectricConductivity * dt)) / lattice_width;
+    let be = ((2 * dt) / (2 * Permittivity + ElectricConductivity * dt)) / dx;
     let am = (2 * Permeability - MagneticConductivity * dt) / (2 * Permeability + MagneticConductivity * dt);
-    let bm = ((2 * dt) / (2 * Permeability + MagneticConductivity * dt)) / lattice_width;
+    let bm = ((2 * dt) / (2 * Permeability + MagneticConductivity * dt)) / dx;
 
     const obj = {
       ae: ae,
@@ -119,10 +113,7 @@ function check_EMPTYBITMAP(bitmap, xnum, ynum) {
   if (bitmap.length !== xnum) checker = true;
   if (checker || !bitmap.every(subArray => Array.isArray(subArray) && subArray.length === ynum)) checker = true;
   if (checker) {
-    console.log("before after");
-    console.log(bitmap);
     bitmap = Array.from({ length: xnum }).map(() => Array.from({ length: ynum }).fill(0));
-    console.log(bitmap);
   }
   return bitmap;
 }
@@ -130,9 +121,8 @@ export function checker_FDTDINPUT(obj1) {
   if (!obj1) {
     return false;
   }
-  const fields = ['nx', 'ny', 'lpml', 'lattice_width', 'bitmap', 'dt',
-    'v', 'order', 'freq', 'FeedPoints', 'Mediums', 'color', 'amplitudeScaler'];
-  const missingFields = fields.filter(field => !obj1.hasOwnProperty(field));
+  const fields = ['nx', 'ny', 'pmlL', 'dx', 'bitmap', 'dt',
+    'order', 'freq', 'FeedPoints', 'Mediums', 'color', 'amplitudeScaler'];
 
   if (!fields.every(field => obj1.hasOwnProperty(field))) {
     return false;
@@ -165,11 +155,11 @@ export function checker_SIMULATIONDATA(obj) {
     },
     amplitudeScaler: (data) => {
       if (data === undefined) return false;
-      const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'Rise', 'Pulse'];
+      const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'SineWave', 'Pulse'];
       if (!requiredAmplitudeScalerFields.every(field => data[field] !== undefined)) return false;
-      const { Rise, Pulse } = data;
-      const riseFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
-      if (!riseFields.every(field => typeof Rise[field] === 'number')) return false;
+      const { SineWave, Pulse } = data;
+      const sinewaveFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
+      if (!sinewaveFields.every(field => typeof SineWave[field] === 'number')) return false;
       if (!pulseFields.every(field => typeof Pulse[field] === 'number')) return false;
       return true;
     },
@@ -203,14 +193,14 @@ export class ColorCode {
     let shiftL;
     if (index === 0) {
       slopeF = -0.2;
-      shiftF = 20.0;
+      shiftF = 27.0;
       slopeL = -0.08;
-      shiftL = 65.0;
+      shiftL = 73.0;
     } else {
-      slopeF = -0.3;
-      shiftF = 35.0;
-      slopeL = -0.11;
-      shiftL = 75.0;
+      slopeF = -0.25;
+      shiftF = 33.0;
+      slopeL = -0.08;
+      shiftL = 73.0;
     }
 
     for (let i = 0; i < 100; i++) {
@@ -240,10 +230,7 @@ export class FDTD2D_PML {
   t;
   nx;
   ny;
-  lattice_width;
-  lpml;
-  order;
-  bitmap;
+  pmlL;
   simulationNum;
   Ez; Ezx; Ezy;
   Hx; Hy;
@@ -264,22 +251,21 @@ export class FDTD2D_PML {
 
     this.nx = fdtd_input.nx;
     this.ny = fdtd_input.ny;
-    this.lattice_width = fdtd_input.lattice_width;
-    this.lpml = fdtd_input.lpml;
+    this.pmlL = fdtd_input.pmlL;
     this.freq = fdtd_input.freq;
-    this.bitmap = fdtd_input.bitmap;
     this.Mediums = fdtd_input.Mediums;
     this.FeedPoints = fdtd_input.FeedPoints;
     this.dt = fdtd_input.dt;
-    this.order = fdtd_input.order;
     this.amplitudeScaler = fdtd_input.amplitudeScaler;
-    var nx = this.nx;
-    var ny = this.ny;
-    var lpml = this.lpml;
-    var order = this.order;
-    var dt = this.dt;
-    var order = this.order;
-    var bitmap = this.bitmap;
+
+    const nx = this.nx;
+    const ny = this.ny;
+    const pmlL = this.pmlL;
+    const order =fdtd_input.order;
+    const dx=fdtd_input.dx;
+    const dt = this.dt;
+    const bitmap =  fdtd_input.bitmap;
+
     this.Ez = Array.from({ length: nx }).map(() => Array.from({ length: ny }).fill(0));
     this.Ezx = Array.from({ length: nx }).map(() => Array.from({ length: ny }).fill(0));
     this.Ezy = Array.from({ length: nx }).map(() => Array.from({ length: ny }).fill(0));
@@ -315,20 +301,20 @@ export class FDTD2D_PML {
     this.simulationNum = 0;
 
     this.pmlBlocks = [];
-    this.pmlBlocks.push({ sx: 0, sy: 0, ex: lpml, ey: ny });
-    this.pmlBlocks.push({ sx: nx - lpml, sy: 0, ex: nx, ey: ny });
-    this.pmlBlocks.push({ sx: lpml, sy: 0, ex: nx - lpml, ey: lpml });
-    this.pmlBlocks.push({ sx: lpml, sy: ny - lpml, ex: nx - lpml, ey: ny });
+    this.pmlBlocks.push({ sx: 0, sy: 0, ex: pmlL, ey: ny });
+    this.pmlBlocks.push({ sx: nx - pmlL, sy: 0, ex: nx, ey: ny });
+    this.pmlBlocks.push({ sx: pmlL, sy: 0, ex: nx - pmlL, ey: pmlL });
+    this.pmlBlocks.push({ sx: pmlL, sy: ny - pmlL, ex: nx - pmlL, ey: ny });
     const set_pml = () => {
 
       const oneKado = (dirX, dirY) => {
-        for (let i = 1; i <= lpml; i++) {
+        for (let i = 1; i <= pmlL; i++) {
           let t_aexpml = this.aexpml[xpoint + i * dirX][ypoint];
           let t_bexpml = this.bexpml[xpoint + i * dirX][ypoint];
           let t_amxpml = this.amxpml[xpoint + i * dirX][ypoint];
           let t_bmxpml = this.bmxpml[xpoint + i * dirX][ypoint];
 
-          for (let n = 1; n <= lpml; n++) {
+          for (let n = 1; n <= pmlL; n++) {
             this.aexpml[xpoint + i * dirX][ypoint + n * dirY] = t_aexpml;
             this.bexpml[xpoint + i * dirX][ypoint + n * dirY] = t_bexpml;
             this.amxpml[xpoint + i * dirX][ypoint + n * dirY] = t_amxpml;
@@ -336,13 +322,13 @@ export class FDTD2D_PML {
           }
         }
 
-        for (let i = 1; i <= lpml; i++) {
+        for (let i = 1; i <= pmlL; i++) {
           let t_aeypml = this.aeypml[xpoint][ypoint + i * dirY];
           let t_beypml = this.beypml[xpoint][ypoint + i * dirY];
           let t_amypml = this.amypml[xpoint][ypoint + i * dirY];
           let t_bmypml = this.bmypml[xpoint][ypoint + i * dirY];
 
-          for (let n = 1; n <= lpml; n++) {
+          for (let n = 1; n <= pmlL; n++) {
             this.aeypml[xpoint + n * dirX][ypoint + i * dirY] = t_aeypml;
             this.beypml[xpoint + n * dirX][ypoint + i * dirY] = t_beypml;
             this.amypml[xpoint + n * dirX][ypoint + i * dirY] = t_amypml;
@@ -365,19 +351,19 @@ export class FDTD2D_PML {
 
           if (pmlV.X === 0) {
             let l = 0;
-            for (let i = 1; i <= lpml; i++, l += 1.0) {
+            for (let i = 1; i <= pmlL; i++, l += 1.0) {
               this.aexpml[xpoint][ypoint + pmlV.Y * i] = this.ae[xpoint][ypoint];
               this.bexpml[xpoint][ypoint + pmlV.Y * i] = this.be[xpoint][ypoint];
               this.amxpml[xpoint][ypoint + pmlV.Y * i] = this.am[xpoint][ypoint];
               this.bmxpml[xpoint][ypoint + pmlV.Y * i] = this.bm[xpoint][ypoint];
-              let te = (l + 1.0) / lpml;
-              let tm = (l + 0.5) / lpml;
+              let te = (l + 1.0) / pmlL;
+              let tm = (l + 0.5) / pmlL;
               let sigxe = pml_conductivty_max * Math.pow(te, order);
               let sigxm = pml_magnetic_max * Math.pow(tm, order);
               let a = (2.0 * e - sigxe * dt) / (2.0 * e + sigxe * dt);
-              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / this.lattice_width;
+              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / dx;
               let c = (2.0 * m - sigxm * dt) / (2.0 * m + sigxm * dt);
-              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / this.lattice_width;
+              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / dx;
               this.aeypml[xpoint][ypoint + pmlV.Y * i] = a;
               this.beypml[xpoint][ypoint + pmlV.Y * i] = b;
               this.amypml[xpoint][ypoint + pmlV.Y * i] = c;
@@ -385,21 +371,21 @@ export class FDTD2D_PML {
             }
           } else {
             let l = 0;
-            for (let i = 1; i <= lpml; i++, l += 1.0) {
+            for (let i = 1; i <= pmlL; i++, l += 1.0) {
               this.aeypml[xpoint + pmlV.X * i][ypoint] = this.ae[xpoint][ypoint];
               this.beypml[xpoint + pmlV.X * i][ypoint] = this.be[xpoint][ypoint];
               this.amypml[xpoint + pmlV.X * i][ypoint] = this.am[xpoint][ypoint];
               this.bmypml[xpoint + pmlV.X * i][ypoint] = this.bm[xpoint][ypoint];
 
-              let te = (l + 1.0) / lpml;
-              let tm = (l + 0.5) / lpml;
+              let te = (l + 1.0) / pmlL;
+              let tm = (l + 0.5) / pmlL;
 
               let sigxe = pml_conductivty_max * Math.pow(te, order);
               let sigxm = pml_magnetic_max * Math.pow(tm, order);
               let a = (2.0 * e - sigxe * dt) / (2.0 * e + sigxe * dt);
-              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / this.lattice_width;
+              let b = ((2.0 * dt) / (2.0 * e + sigxe * dt)) / dx;
               let c = (2.0 * m - sigxm * dt) / (2.0 * m + sigxm * dt);
-              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / this.lattice_width;
+              let d = ((2.0 * dt) / (2.0 * m + sigxm * dt)) / dx;
               this.aexpml[xpoint + pmlV.X * i][ypoint] = a;
               this.bexpml[xpoint + pmlV.X * i][ypoint] = b;
               this.amxpml[xpoint + pmlV.X * i][ypoint] = c;
@@ -416,17 +402,17 @@ export class FDTD2D_PML {
           onepmlline();
         }
       }
-      var xpoint = lpml;
-      var ypoint = lpml;
-      let lengths = [nx - 2 * lpml - 1, ny - 2 * lpml - 1, nx - 2 * lpml - 1, ny - 2 * lpml - 1];
+      var xpoint = pmlL;
+      var ypoint = pmlL;
+      let lengths = [nx - 2 * pmlL - 1, ny - 2 * pmlL - 1, nx - 2 * pmlL - 1, ny - 2 * pmlL - 1];
       var radian = 0;
 
       for (let i = 0; i < 4; i++) {
         onedirection(radian, lengths[i]);
         radian += Math.PI / 2;
       }
-      xpoint = lpml;
-      ypoint = lpml;
+      xpoint = pmlL;
+      ypoint = pmlL;
       let switchpointX = [0, 1, 0, -1];
       let switchpointY = [0, 0, 1, 0];
       let KadoPMLdirectionX = [-1, 1, 1, -1];
@@ -446,21 +432,21 @@ export class FDTD2D_PML {
     return this.Ez;
   }
   cal_E() {
-    for (var i = this.lpml; i < this.nx - this.lpml; i++) {
-      for (var n = this.lpml; n < this.ny - this.lpml; n++) {
+    for (var i = this.pmlL; i < this.nx - this.pmlL; i++) {
+      for (var n = this.pmlL; n < this.ny - this.pmlL; n++) {
         this.Ez[i][n] = this.ae[i][n] * this.Ez[i][n] + this.be[i][n] * (this.Hy[i][n] - this.Hy[i - 1][n])
           - this.be[i][n] * (this.Hx[i][n] - this.Hx[i][n - 1]);
       }
     }
   }
   cal_H() {
-    for (var i = this.lpml; i < this.nx - this.lpml; i++) {
-      for (var n = this.lpml; n < this.ny - this.lpml; n++) {
+    for (var i = this.pmlL; i < this.nx - this.pmlL; i++) {
+      for (var n = this.pmlL; n < this.ny - this.pmlL; n++) {
         this.Hx[i][n] = this.am[i][n] * this.Hx[i][n] - this.bm[i][n] * (this.Ez[i][n + 1] - this.Ez[i][n]);
       }
     }
-    for (var i = this.lpml; i < this.nx - this.lpml; i++) {
-      for (var n = this.lpml; n < this.ny - this.lpml; n++) {
+    for (var i = this.pmlL; i < this.nx - this.pmlL; i++) {
+      for (var n = this.pmlL; n < this.ny - this.pmlL; n++) {
         this.Hy[i][n] = this.am[i][n] * this.Hy[i][n] + this.bm[i][n] * (this.Ez[i + 1][n] - this.Ez[i][n]);
       }
     }
@@ -510,8 +496,8 @@ export class FDTD2D_PML {
   }
 
   func_AmplitudeScaler(simulationnum) {
-    if (this.amplitudeScaler.Select === "Rise") {
-      return 1 / (1 + Math.exp(this.amplitudeScaler.Rise.slope * (simulationnum - this.amplitudeScaler.Rise.shift)));
+    if (this.amplitudeScaler.Select === "SineWave") {
+      return 1 / (1 + Math.exp(this.amplitudeScaler.SineWave.slope * (simulationnum - this.amplitudeScaler.SineWave.shift)));
     }
     if (this.amplitudeScaler.Select === "Pulse") {
       return Math.exp(-Math.pow((simulationnum - this.amplitudeScaler.Pulse.peakPosition), 2) / (this.amplitudeScaler.Pulse.widthFactor * 400));

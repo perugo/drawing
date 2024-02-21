@@ -31,10 +31,10 @@ let lastTimestamp = 0;
 
 var nx;
 var ny;
-var lpml;
+var pmlL;
 var dx;
 const interval = 110;
-const drawcanvasrate = 4;
+const drawcanvasrate = 3;
 var filmnum = 100;
 var filmcounter = 0;
 const MEDIUM_COLOR = ['rgb(255,255,255)', 'rgb(0,0,0)', 'rgb(0,0,200)', 'rgb(0,255,0)', 'rgb(255,180,0)'];
@@ -54,20 +54,20 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
 
   useEffect(() => {
     movevideoRef.current = true;
+    if (ctxRef.current) ctxRef.current.clearRect(0, 0, RECT.width, RECT.height);
     if (!checker_FDTDINPUT(FDTD_Input) || RECT.width === 0) return;
     console.log("FDTD_INPUT useEffect");
     FDTD2D_PMLRef.current = new FDTD2D_PML(FDTD_Input);
     showSimulationRef.current = true;
-    const {nx:inputNx,ny:inputNy,lpml:inputLpml,color,amplitudeScaler,bitmap}=FDTD_Input;
+    const {nx:inputNx,ny:inputNy,pmlL:inputPmlL,color,amplitudeScaler,bitmap}=FDTD_Input;
     const {simulationNum}=amplitudeScaler;
     const {colorThreshold,colorTransitionIndex}=color;
     filmcounter = 0;
     colorCodeRef.current = new ColorCode(colorThreshold,colorTransitionIndex);
     nx = inputNx;
     ny = inputNy;
-    lpml = inputLpml;
-    console.log(nx+" : "+ny+" "+dx);
-    dx = RECT.width / (nx - lpml * 2);
+    pmlL = inputPmlL;
+    dx = RECT.width / (nx - pmlL * 2);
     filmnum =simulationNum / drawcanvasrate;
     requestAnimationFrame(Program);
     drawbackground(ctxbackgroundRef.current,bitmap);
@@ -90,7 +90,10 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
 
   useEffect(() => {
     setMoveVideo(true);
-    if (!showSimulation) FDTD2D_PMLRef.current = null;
+    if (!showSimulation){
+      FDTD2D_PMLRef.current = null;
+      if (ctxRef.current) ctxRef.current.clearRect(0, 0, RECT.width, RECT.height);
+    } 
     showSimulationRef.current = showSimulation;
   }, [showSimulation]);
   useEffect(() => {
@@ -120,18 +123,18 @@ export const SimulationCanvas = ({ simulationData, showSimulation, setShowSimula
   }
   const canvas = (ctx) => {
     var Ez = FDTD2D_PMLRef.current.get_Ez();
-    for (var i = lpml; i < nx - lpml; i++) {
-      for (var n = lpml; n < ny - lpml; n++) {
+    for (var i = pmlL; i < nx - pmlL; i++) {
+      for (var n = pmlL; n < ny - pmlL; n++) {
         ctx.fillStyle = colorCodeRef.current.give(Ez[i][n]);
-        ctx.fillRect((i - lpml) * dx, (n - lpml) * dx, dx + 1, dx + 1);
+        ctx.fillRect((i - pmlL) * dx, (n - pmlL) * dx, dx + 1, dx + 1);
       }
     }
   }
   const drawbackground = (ctx, bitmap) => {
-    for (var i = 0; i < nx - lpml * 2; i++) {
-      for (var n = 0; n < ny - lpml * 2; n++) {
+    for (var i = pmlL; i < nx - pmlL; i++) {
+      for (var n = pmlL; n < ny - pmlL; n++) {
         ctx.fillStyle = MEDIUM_COLOR[bitmap[i][n]];
-        ctx.fillRect((i-lpml) * dx, (n-lpml) * dx, dx + 1, dx + 1);
+        ctx.fillRect((i-pmlL) * dx, (n-pmlL) * dx, dx + 1, dx + 1);
       }
     }
   }

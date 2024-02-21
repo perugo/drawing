@@ -1,264 +1,20 @@
 import styled from "styled-components";
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   validateInput,
-  checker_amplitudeScaler,
   handleKeyDown,
-  setToDefault,
   updateStringStates,
   isStateComplete,
   isValidNumber
 } from './BoxDomain_helper';
-const BoxWrapper = styled.div`
-flex-direction:column;
-display:flex;
-`
-const Front = styled.div`
-  border-radius: 5px;
-  overflow: hidden;
-  box-sizing:border-box;
-  background-color: rgb(255,255,255);
-  border-spacing:0;
-  cursor:auto;
-  direction 1tr;
-  empty-cells:show;
-  hyphens:none;
-  tab-size:8;
-  text-align:left;
-  text-indent:0;
-  text-transform:none;
-  widows:2;
-  word-spacing:normal;
-  font-weight:400;
-  -webkit-font-smoothing:auto;
-  word-break:bread-word;
-  display:block;
-  position:relative;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-  &::before{
-    content:"";
-    position:absolute;
-    left:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    border-top: 1px solid #eaeded;
-    z-index:1;
-  }
-  &::after{
-    content:"";
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    box-sizing:border-box;
-    box-shadow:0 1px 1px 0 rgba(0,28,36,0,3) 1px 1px 1px 1px 0 rgba(0,28,36,0.15), -1px 1px 1px 0 rgba(0,28,36,0.15);
-    mix-blend-mode:multiply;
-  }
-`
-
-const FrontHeader = styled.div`
-  border-bottom:1px solid #eaeded;
-`
-const FrontHeaderInner = styled.div`
- width:100%;
- background-color: rgb(246,246,246);
- display:flex;
- padding:1px 20px 0px 20px;
- box-sizing:border-box;
- border:none;
- line-height 22px;
- tex-align:left;
- justify-content:space-between;
-`
-const TitleWrapper = styled.div`
-flex-wrap:wrap;
-justify-content:space-between;
-display:flex;
-align-content:center;
-font-size:18px;
-min-width:0;
-color:#16191f;
-margin-right:15px;
-`
-const CustomH3 = styled.span`
- font-size:18px;
- font-weight:500;
- font-family:Arial,sans-serif, Helvetica,Circular;
- -webkit-font-smoothing:auto;
- display:inline;
- margin-right:8px;
- margin:0px;
- color:rgb(40,40,40);
-`
-const FrontBody = styled.div`
-position:relative;
-padding:10px 20px 12px 20px;
-`
-const FrontBodyInner = styled.div`
-position:relative;
-  cursor:pointer;
-  display:flex;
-  padding: 12px 20px 12px 20px;
-  border:none;
-  line-height:22px;
-  text-align:left;
-  background-color:#ddd;
-`
-
-const ColumnLayout = styled.div`
-  margin:-10px;
-  display:flex;
-  flex-wrap:wrap;
-  color::#16191f;
-  box-sizing:border-box;
-  border-collapse:separete;
-  direction:1tr;
-  flex-direction:column;
+import Select from 'react-select'
+import './../../Components/reactSelect.css';
+import {
+  Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
+  ColumnLayout, GridColumn, FrontHeaderLeft, customStyles
+} from './../../Components/StyledBoxComponents';
 
 
-  cursor:auto;
-  direction:1tr;
-  text-align:left;
-  font-size:18px;
-  line-height:20px;
-  color:#16191f;
-  font-weight:500;
-  font-family:times new roman,serif;
-`
-const GridColumn = styled.div`
-  padding:10px 8px 5px 8px;
-  box-sizing:border-box;
-  display:flex;
-  position:relative;
-  flex-direction:column;
-`
-const ColumnTitle = styled.div`
-  font-size:16px;
-  font-weight:500;
-  line-height:1.2;
-  color:rgb(100,100,100);
-  margin-bottom:2px;
-  font-family:times new roman,serif;
-  font-family:"times new roman", serif;
-`
-//,"Helvetica Neue",Roboto,Arial,sans-serif
-const SpanText = styled.span`
-font-size:15px;
-font-weight:500;
-line-height:22px;
-color:rgb(40,40,40);
-margin-bottom:2px;
-`
-const ButtonWrapperRight = styled.div`
-display: flex;
-`
-const Button = styled.button`
-background-color:rgb(255,255,255);
-border-color:rgb(0,0,0);
-border-style:solid;
-border-width:1px;
-border-radius:3px;
-padding:0px 15px;
-line-height:1.5;
-display:flex;
-justify-content:center;
-&:hover {
-  border-color:rgb(100,100,100);
-  background-color:rgb(240,240,240);
-}
-&:active{
-  background-color:rgb(225,225,225);
-}
-cursor:pointer;
-`
-const ContentBodyColumn = styled.div`
-  margin-bottom:7px;
-  position:relative;
-  display: inline-block;
-  display:flex;
-  flex-direction:column;
-`
-const FrontHeaderLeft = styled.div`
-line-height:none;
-display:flex;
-flex-direction:row;
-`
-const ButtonSmallWrapper = styled.div`
-  text-align: center;
-  display: flex;
-  align-items: center;
-`
-const ButtonSmall = styled.div`
-  backface-visibility: hidden;
-  background-color:rgb(255,153,0);
-  border: 0;
-  box-sizing: border-box;
-  color:rgb(0,0,0);
-  cursor: pointer;
-  display: inline-block;
-  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
-  font-weight: 500;
-  font-size:16px;
-  line-height:1.5;
-  position: relative;
-  text-align: left;
-  text-decoration: none;
-  letter-spacing:.25px;
-  border-radius:4px;
-  padding: 0px 17px;
-  transition: transform .2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-
-  &:hover{
-    background-color:rgb(236,114,17);
-  }
-  &:active{
-    background-color:#EB5F07;
-}
-`
-const ButtonReturnWrapper = styled.div`
-  text-align: center;
-  display: flex;
-  padding-top:14px;
-  align-items: center;
-  margin:auto;
-`
-const ButtonReturn = styled.div`
-  backface-visibility: hidden;
-  background-color:rgb(255,153,0);
-  border: 0;
-  box-sizing: border-box;
-  color:rgb(0,0,0);
-  cursor: pointer;
-  display: inline-block;
-  font-family:sans-serif,Arial, Helvetica,Circular,Helvetica,sans-serif;
-  font-weight: 500;
-  font-size:18px;
-  line-height:1.9;
-  position: relative;
-  text-align: left;
-  text-decoration: none;
-  letter-spacing:.25px;
-  border-radius:4px;
-  padding: 0px 22px;
-  transition: transform .2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-
-  &:hover{
-    background-color:rgb(236,114,17);
-  }
-  &:active{
-    background-color:#EB5F07;
-}
-`
 const InputText = styled.input`
 width:140px;
   text-align: right;
@@ -283,24 +39,49 @@ const SmallLabel = styled.div`
   font-size:14px;
   text-align:left;
 `;
-const SectionContainer = styled.div`
-  background-color: #f9f9f9; // A subtle background color to differentiate the section
-  padding: 3px 5px 8px 3px;
-  border-radius: 5px;
-  margin-bottom: 7px; // Space between sections
-`;
+const InputItemGrid2 = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+`
+const meterOptions = [
+  { value: 0, label: 'm' },
+  { value: 3, label: 'mm' },
+  { value: 6, label: 'um' },
+  { value: 9, label: 'nm' },
+  { value: 12, label: 'pm' },
+]
 export const BoxDomain = ({
-  draftDrawData, setDraftDrawData,
-  drawData
+  setting, setSetting
 }) => {
   const [strField, setStrField] = useState({});
   const timeoutIdRef = useRef();
+  const [meterExponent, setMeterExponent] = useState(0);
+  const readOnce = useRef(false);
+  const [selectedMeterOption, setSelectedMeterOption] = useState(meterOptions[0]);
 
   useEffect(() => {
-    if (!isStateComplete(drawData, draftDrawData)) return;
-    updateStringStates(draftDrawData, setStrField);
-  }, [drawData, draftDrawData])
-
+    if (!isStateComplete(setting)) return;
+    if (!readOnce.current) {
+      const meteroptionExponent = initMeterExponent(setting.fieldX);
+      const selectedMeterO = meterOptions.find(option => option.value === meteroptionExponent);
+      setMeterExponent(meteroptionExponent);
+      setSelectedMeterOption(selectedMeterO);
+      setStrField({
+        fieldX: RoundCustom(setting.fieldX * Math.pow(10, meteroptionExponent)),
+        fieldY: RoundCustom(setting.fieldY * Math.pow(10, meteroptionExponent)),
+      });
+    } else {
+      //console.log("fieldX:"+RoundCustom(setting.fieldX * Math.pow(10, meterExponent)));
+      setStrField(() => ({
+        fieldX: RoundCustom(setting.fieldX * Math.pow(10, meterExponent)),
+        fieldY: RoundCustom(setting.fieldY * Math.pow(10, meterExponent)),
+      }));
+    }
+    //updateStringStates(setting, setStrField);
+    readOnce.current = true;
+  }, [setting, meterExponent])
+  useEffect(() => {
+  }, [strField])
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
@@ -312,9 +93,7 @@ export const BoxDomain = ({
     }));
     startSetInputTimer();
   };
-  const onClick_setToDefault = () => {
-    setDraftDrawData(drawData);
-  }
+
 
   const startSetInputTimer = () => {
     timeoutIdRef.current = setTimeout(handleSetInputTimeout, 1600);
@@ -322,68 +101,161 @@ export const BoxDomain = ({
   const handleSetInputTimeout = () => {
     setStrField((current) => {
       let updated = {
-        fieldX: isValidNumber(current.fieldX) ? roundToFourSignificantFigures(current.fieldX) : draftDrawData.setting.fieldX,
-        fieldY: isValidNumber(current.fieldY) ? roundToFourSignificantFigures(current.fieldY) : draftDrawData.setting.fieldY
+        fieldX: isValidNumber(current.fieldX) ? roundToFourSignificantFigures(current.fieldX/ Math.pow(10, meterExponent)) : roundToFourSignificantFigures(setting.fieldX),
+        fieldY: isValidNumber(current.fieldY) ? roundToFourSignificantFigures(current.fieldY/ Math.pow(10, meterExponent)) : roundToFourSignificantFigures(setting.fieldY)
       }
-      setDraftDrawData(prevData => ({
-        ...prevData,
-        setting: {
-          ...prevData.setting,
-          ...updated // Spread the contents of 'updated' here, not the object itself
-        }
-      }));
+      setSetting({ ...setting, ...updated });
     })
   };
-
+  const dispMeterUnit = (value) => {
+    const matchedOptions = meterOptions.find(option => option.value === value);
+    return matchedOptions ? matchedOptions.label : "";
+  }
   const inputFields = [
-    { name: "x軸の幅 [ m ] : ", field: 'fieldX' },
-    { name: "y軸の幅 [ m ] : ", field: 'fieldY' }
+    { name: "x軸の幅", field: 'fieldX' },
+    { name: "y軸の幅", field: 'fieldY' }
   ];
+  const handleMeterChange = (option) => {
+    setSelectedMeterOption(option);
+    console.log(option);
+    setMeterExponent(option.value);
+  }
   return (
-    <BoxWrapper>
-      <Front>
-        <FrontHeader>
-          <FrontHeaderInner>
-            <FrontHeaderLeft>
-              <TitleWrapper>
-                <CustomH3>x軸・y軸の幅</CustomH3>
-              </TitleWrapper>
-            </FrontHeaderLeft>
-          </FrontHeaderInner>
-        </FrontHeader>
+    <Box style={{ overflow: "visible" }}>
+      <FrontHeader>
+        <FrontHeaderInner style={{ padding: "3px 20px 2px 20px" }}>
+          <FrontHeaderLeft>
+            <TitleWrapper>
+              <CustomH3>ｘ軸の分割数</CustomH3>
+            </TitleWrapper>
+          </FrontHeaderLeft>
+        </FrontHeaderInner>
+      </FrontHeader>
 
-        <FrontBody>
-          <ColumnLayout>
-            <GridColumn>
-              {strField !== undefined && strField.fieldX !== undefined && (
-                <InputItemGrid>
-                  {inputFields.map(({ name, field }, index) => {
+      <FrontBody>
+        <ColumnLayout>
+          <GridColumn>
+            {strField !== undefined && strField.fieldX !== undefined && (
+              <InputItemGrid>
+                {inputFields.map(({ name, field }, index) => {
 
-                    const value = strField[field];
-                    return (
-                      <JustFlexRow key={field}>
-                        <SmallLabel>{name}</SmallLabel>
-                        <InputText
-                          key={field}
-                          maxLength="12"
-                          type="text"
-                          value={value}
-                          onChange={handleInputChange(field)}
-                          onKeyDown={handleKeyDown()}
-                        />
-                      </JustFlexRow>
-                    );
+                  const value = strField[field];
+                  return (
+                    <JustFlexRow key={field}>
+                      <SmallLabel>{name} [ {dispMeterUnit(meterExponent)} ] : </SmallLabel>
+                      <InputText
+                        key={field}
+                        maxLength="12"
+                        type="text"
+                        value={value}
+                        onChange={handleInputChange(field)}
+                        onKeyDown={handleKeyDown()}
+                      />
+                    </JustFlexRow>
+                  );
 
-                  })}
-                </InputItemGrid>
-              )}
+                })}
+                <JustFlexRow>
+                  <SmallLabel style={{ marginLeft: "-2px", width: "54px" }}>単位 : </SmallLabel>
+                  <Select
+                    options={meterOptions}
+                    styles={customStyles}
+                    value={selectedMeterOption}
+                    onChange={handleMeterChange}
+                    isSearchable={false}
+                    components={{
+                      IndicatorSeparator: () => null,
+                    }}
+                  />
+                </JustFlexRow>
 
-            </GridColumn>
-          </ColumnLayout>
-        </FrontBody>
-      </Front>
-    </BoxWrapper>
+              </InputItemGrid>
+            )}
+
+          </GridColumn>
+        </ColumnLayout>
+      </FrontBody>
+    </Box>
   )
+};
+
+function RoundCustom(number) {
+  // 数値を文字列に変換し、整数部と小数部に分割
+  var parts = number.toString().split('.');
+  var integerDigits = parts[0].length;
+  var decimalDigits = 0;
+
+  // 小数部がある場合、有効な小数桁数をカウント
+  if (parts.length > 1) {
+    var decimalPart = parts[1];
+    for (var i = 0; i < decimalPart.length; i++) {
+      decimalDigits++;
+      if (decimalPart[i] !== '0') {
+        break;
+      }
+    }
+  }
+  // 精度を設定
+  var precision;
+  if (decimalDigits > 0) { // 小数部がある場合
+    precision = decimalDigits - integerDigits + 4; // 整数部と小数部の合計桁数から4を引く
+  } else { // 整数部のみの場合
+    return Number(number);
+  }
+
+  // 精度が負にならないように調整
+  precision = Math.max(precision, 0);
+
+  // 割り算の結果を計算して丸める
+  return Number(number.toFixed(precision));
+
+}
+const convertToExponential = (num) => {
+  if (Number.isInteger(num) && num >= 0 && num <= 100) {
+    return {
+      mantissa: num.toString(),
+      exponent: "",
+    };
+  }
+  const absoluteNumber = Math.abs(num);
+  // 指数を計算
+  const exponent = Math.floor(Math.log10(absoluteNumber));
+  // 仮数を計算
+  let mantissa = absoluteNumber / Math.pow(10, exponent);
+  // 有効数字を取得（最大5桁）
+  const yukosuji = get_yukosuji(mantissa, 4);
+  mantissa = formatMantissa(mantissa, yukosuji);
+  var str_mantissa = mantissa;
+  var str_exponent = exponent.toString();
+  if (exponent !== 0) { str_mantissa = mantissa + " ×10"; }
+  if (exponent === 0) str_exponent = "";
+  return {
+    mantissa: str_mantissa,
+    exponent: str_exponent
+  };
+};
+function get_yukosuji(number, limit) {
+  let strNum = number.toString();
+  // 左端から連続する"0"と"."を取り除く
+  strNum = strNum.replace(/^0+\.?/, '');
+  // 右端から連続する"0"を取り除く（ただし整数部分の0は取り除かない）
+  if (strNum.includes('.')) {
+    strNum = strNum.replace(/0+$/, '');
+  }
+  // '.' を除外する
+  strNum = strNum.replace('.', '');
+  return Math.min(strNum.length, limit);
+}
+const formatMantissa = (mantissa, yukosuji) => {
+  const parts = mantissa.toString().split(".");
+  let result = parts[0];
+
+  if (parts.length > 1) {
+    const neededLength = yukosuji - parts[0].length;
+    result += "." + parts[1].slice(0, neededLength);
+  }
+
+  return result;
 };
 function roundToFourSignificantFigures(num) {
   if (num === 0) {
@@ -394,4 +266,18 @@ function roundToFourSignificantFigures(num) {
   let magnitude = Math.pow(10, power);
   let shifted = Math.round(num * magnitude);
   return shifted / magnitude;
+}
+
+const initMeterExponent = (metervalue) => {
+  if (metervalue > 1) {
+    return 0;
+  } else if (metervalue > 1e-3) {
+    return 3;
+  } else if (metervalue > 1e-6) {
+    return 6;
+  } else if (metervalue > 1e-9) {
+    return 9;
+  } else if (metervalue > 1e-12) {
+    return 12;
+  } else { return 0; }
 }

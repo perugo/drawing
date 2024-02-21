@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link } from './Link';
 import { DrawCanvas } from './Components_Home/DrawCanvas';

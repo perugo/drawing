@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft, OutlinedButtonContainer, OutlinedButtonText,
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 
 

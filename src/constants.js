@@ -3,13 +3,13 @@ export const DEFAULT = {
     { "DielectricConstant": 1, "DielectricLoss": 0, "MagneticConstant": 1, "MagneticLoss": 0 },
     { "DielectricConstant": 1, "DielectricLoss": 100000000, "MagneticConstant": 1, "MagneticLoss": 0 }
   ],
-  SETTING: { fieldX: 0.48, fieldY: 0.36, split: 200, freq: 6.25e9 },
+  SETTING: { fieldX: 0.48, fieldY: 0.36, split: 350, freq: 12e9 },
   BITMAP:[],
   FEEDPOINT: [{ x: 0, y: 0, color: 'rgb(255, 0, 0)', phase: 0 }],
   COLORTHRESHOLD:0.08,
   AMPLITUDESCALER: {
-    "Select": "Rise", "simulationNum": 700,
-    "Rise": { "slope": -0.08, "shift": 70 },
+    "Select": "SineWave", "simulationNum": 700,
+    "SineWave": { "slope": -0.08, "shift": 70 },
     "Pulse": { "peakPosition": 100, "widthFactor": 2.5 }
   },
   COLOR:{

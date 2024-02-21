@@ -21,11 +21,8 @@ function Graph({ setting, amplitudeScaler }) {
       setTitle("error");
       return;
     }
-    console.log(setting);
-    console.log(amplitudeScaler);
-    setTitle("read");
 
-    const { Rise: { slope: inputSlope, shift: inputShift }, Pulse: { peakPosition: inputPeakPosition, widthFactor: inputWidthFactor }, simulationNum: inputSimulationNum } = amplitudeScaler;
+    const { SineWave: { slope: inputSlope, shift: inputShift }, Pulse: { peakPosition: inputPeakPosition, widthFactor: inputWidthFactor }, simulationNum: inputSimulationNum } = amplitudeScaler;
     const { freq: inputFreq, split: inputSplit, fieldX: inputFieldX } = setting;
     setFreq(inputFreq);
     setSplit(inputSplit);
@@ -35,7 +32,7 @@ function Graph({ setting, amplitudeScaler }) {
     setPeakPosition(inputPeakPosition);
     setWidthFactor(inputWidthFactor);
     setSimulationNum(inputSimulationNum);
-    if (amplitudeScaler.Select === 'Rise') {
+    if (amplitudeScaler.Select === 'SineWave') {
       setTitle('正弦波');
     } else {
       setTitle('変調パルス波');
@@ -116,7 +113,7 @@ function Graph({ setting, amplitudeScaler }) {
       layout={{
         width: width,
         height: height,
-        title: title ==='正弦波' ? '正弦波' : '変調パルス波',
+        title: title,
         margin: { l: 50, r: 50, b: 50, t: 50, pad: 0 },  // Adjusted margins
         xaxis: {
           title: 'シミュレーション回数',
@@ -130,6 +127,8 @@ function Graph({ setting, amplitudeScaler }) {
         annotations: [
           ...(title === '正弦波' ? [symmetricalPointAnnotation] : [gaussianPeakAnnotation])
         ],
+        showlegend:false
+
       }}
       config={{ displayModeBar: false, staticPlot: true }}
     />
@@ -155,11 +154,11 @@ export default Graph;
 
 export function checker_AMPLITUDESCALER(obj) {
   if (!obj) return false;
-  const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'Rise', 'Pulse'];
+  const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'SineWave', 'Pulse'];
   if (!requiredAmplitudeScalerFields.every(field => obj[field] !== undefined)) return false;
-  const { Rise, Pulse } = obj;
-  const riseFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
-  if (!riseFields.every(field => typeof Rise[field] === 'number')) return false;
+  const { SineWave, Pulse } = obj;
+  const sinewaveFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
+  if (!sinewaveFields.every(field => typeof SineWave[field] === 'number')) return false;
   if (!pulseFields.every(field => typeof Pulse[field] === 'number')) return false;
   return true;
 

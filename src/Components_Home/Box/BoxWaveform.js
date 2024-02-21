@@ -4,7 +4,7 @@ import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft, RadioButton, OutlinedButtonContainer, OutlinedButtonText,
   RadioButtonInput
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 const ContentBodyRow = styled.div`
   margin-bottom:3px;
@@ -29,12 +29,12 @@ export const BoxWaveform = ({ amplitudeScaler, setAmplitudeScaler, setShowWindow
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
-    if (amplitudeScaler.Select === "Rise") setSelectedIndex(0);
+    if (amplitudeScaler.Select === "SineWave") setSelectedIndex(0);
     if (amplitudeScaler.Select === "Pulse") setSelectedIndex(1);
   }, [amplitudeScaler])
 
   const changeObjectIndex = (index) => {
-    if (index === 0) setAmplitudeScaler({ ...amplitudeScaler, Select: "Rise" });
+    if (index === 0) setAmplitudeScaler({ ...amplitudeScaler, Select: "SineWave" });
     if (index === 1) setAmplitudeScaler({ ...amplitudeScaler, Select: "Pulse" });
   }
   const waveformSelection = [

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 
 const FormulaLabel = styled.div`
@@ -64,11 +64,9 @@ export const BoxFormula = ({ amplitudeScaler }) => {
   useEffect(() => {
     if (amplitudeScaler === undefined) return;
     if (amplitudeScaler.Select === undefined) return;
-    if (amplitudeScaler.Select === 'Rise') {
-      console.log("riseing");
-      setSelect('Rise');
+    if (amplitudeScaler.Select === 'SineWave') {
+      setSelect('SineWave');
     } else if (amplitudeScaler.Select === 'Pulse') {
-      console.log("pulsing");
       setSelect('Pulse');
     }
   }, [amplitudeScaler])
@@ -87,7 +85,7 @@ export const BoxFormula = ({ amplitudeScaler }) => {
       <FrontBody>
         <ColumnLayout>
           <GridColumn>
-            {select && select === 'Rise' && (
+            {select && select === 'SineWave' && (
 
               <LabelRow>
                 <FormulaLabel>正弦波 :</FormulaLabel>

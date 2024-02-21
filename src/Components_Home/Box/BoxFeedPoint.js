@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
   ColumnLayout, GridColumn, FrontHeaderLeft, SVGInner, StyledImg
-} from './StyledBoxComponents';
+} from './../../Components/StyledBoxComponents';
 
 const FEEDPOINT_COLOR = [
   'rgb(255, 0, 0)',   // Lighter 赤色 (Red)

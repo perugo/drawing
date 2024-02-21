@@ -101,7 +101,7 @@ grid-gap:50px;
 display:flex;
 justify-content:center;
 align-items:center;
-padding:16px 0px 20px 0px;
+padding:8px 0px 20px 0px;
 `
 
 const SVGWrapperCombined = styled.div`
@@ -139,7 +139,6 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
     setShowWindow
   };
   const InputWaveBoxProps = {
-    setting, setSetting,
     amplitudeScaler, setAmplitudeScaler,
     setShowWindow
   };
@@ -194,10 +193,9 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
       <ToggleWrapper>
         <ToggleInner>
           <BoxWrapper>
-            <BoxFreq {...BoxFreqProps} style={{overflow:"visible"}}></BoxFreq>
+            <BoxFreq {...BoxFreqProps} style={{overflow:"visible"}}/>
             <BoxWaveform {...InputWaveBoxProps} />
-            <BoxMedium {...MediumBoxProps} clearBitmap={clearBitmap} />
-            
+            <BoxMedium {...MediumBoxProps} clearBitmap={clearBitmap} />            
             <BoxFeedPoint {...FeedPointBoxProps} />
             <BoxColorTransition {...ColorThresholdBoxProps} />
             <BoxDomainGrid {...DomainGridBoxProps} />
@@ -210,8 +208,8 @@ export const RightBar = ({ medium, setting, setSetting, feedPoint, setFeedPoint,
                 <PlayPauseButton moveVideo={moveVideo} setMoveVideo={setMoveVideo} />
               </FlexSer>
             )}
-            <ButtonDownload onClick={push}>Simulate</ButtonDownload>
-            <ButtonDownload onClick={reset}>Reset</ButtonDownload>
+            <ButtonDownload onClick={push}>シミュレーション実行</ButtonDownload>
+            <ButtonDownload onClick={reset}>初期化</ButtonDownload>
           </ButtonContainer>
         </ToggleInner>
       </ToggleWrapper>

@@ -121,7 +121,7 @@ justify-content:center;
 padding-bottom:20px;
 `
 export const Home = ({
-  setting, setSetting,
+  setting,
   amplitudeScaler, setAmplitudeScaler,
   setShowWindow }) => {
 
@@ -142,12 +142,9 @@ export const Home = ({
     amplitudeScaler
   }
   const SettingBox = {
-    setting: draftSetting, setSetting: setDraftSetting,
     amplitudeScaler: draftAmplitudeScaler, setAmplitudeScaler: setDraftAmplitudeScaler,
-    setShowWindow
   }
   const onClick_save = () => {
-    setSetting(draftSetting);
     setAmplitudeScaler(draftAmplitudeScaler);
     setShowWindow("home");
   }

@@ -5,10 +5,10 @@ import Select from 'react-select'
 import './../../Components/reactSelect.css';
 import {
   Box, FrontHeader, FrontHeaderInner, TitleWrapper, CustomH3, FrontBody,
-  ColumnLayout, GridColumn, FrontHeaderLeft
-} from './StyledBoxComponents';
+  ColumnLayout, GridColumn, FrontHeaderLeft,customStyles
+} from './../../Components/StyledBoxComponents';
 const InputText = styled.input`
-  width:82px;
+  width:122px;
   text-align: right;
   box-sizing: border-box;
   font-size: 14px;
@@ -78,42 +78,7 @@ flex-direction:row;
 width:100%;
 `
 
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    height: '25px',
-    minHeight: '25px',
-    fontSize: '15px',
-  }),
-  menu: (provided) => ({
-    ...provided,
-  }),
-  // オプション（選択肢）のスタイル
-  option: (provided) => ({
-    ...provided,
-    fontSize: '15px',
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    height: '25px',
-    padding: '0 6px',
-    fontSize: '15px'
-  }),
-  input: (provided) => ({
-    ...provided,
-    margin: '0px',
-    fontSize: '15px'
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    fontSize: '15px',  // フォントサイズを設定
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    height: '25px',
-    fontSize: '15px'
-  }),
-};
+
 const options = [
   { value: 0, label: 'Hz' },
   { value: -3, label: 'kHz' },
@@ -218,7 +183,7 @@ export const BoxFreq = ({
     console.log(option);
   };
   return (
-    <Box>
+    <Box  style={{overflow:"visible"}}>
       <FrontHeader>
         <FrontHeaderInner>
           <FrontHeaderLeft>
@@ -251,6 +216,10 @@ export const BoxFreq = ({
                   styles={customStyles}
                   value={selectedOption}
                   onChange={handleOnChange}
+                  isSearchable={false}
+                  components={{
+                    IndicatorSeparator: () => null,
+                  }}
                 />
 
 

@@ -154,31 +154,33 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
   const [rectDrawData, setRectDrawData] = useState({ width: 0, height: 0 });
   const [rectDraftDrawData, setRectDraftDrawData] = useState({ width: 0, height: 0 });
   const [draftDrawData, setDraftDrawData] = useState({});
-
+  const [draftSetting,setDraftSetting]=useState({});
   useEffect(() => {
     if (!checker_DRAWDATA(drawData)) return;
     setRectDrawData(maker_RECT(drawData.setting));
     setRectDraftDrawData(maker_RECT(drawData.setting));
     setDraftDrawData(drawData);
+    setDraftSetting(drawData.setting);
   }, [drawData])
 
   const gridBoxProps = {
-    draftDrawData, setDraftDrawData,
-    drawData
+    setting:draftSetting,setSetting:setDraftSetting
   }
+  useEffect(()=>{
+    setDraftDrawData({...drawData,setting:draftSetting});
+  },[draftSetting])
+
   const domainBoxProps = {
-    draftDrawData, setDraftDrawData,
-    drawData,
+    setting:draftSetting,setSetting:setDraftSetting
   }
   useEffect(() => {
     if (!checker_DRAWDATA(draftDrawData)) return;
     setRectDraftDrawData(maker_RECT(draftDrawData.setting));
   }, [draftDrawData])
+
   const save=()=>{
-    setDraftDrawData((currentDraft) => {
-      setHomeRectDrawData(maker_RECTForHOME(currentDraft.setting));
-      setSetting(currentDraft.setting);
-    });
+    setHomeRectDrawData(maker_RECTForHOME(draftSetting));
+    setSetting(draftSetting);
     setShowWindow("home");
   }
   const ArrowRowComponent =
@@ -199,11 +201,11 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
         {rectDrawData && rectDrawData.width !== 0 && rectDraftDrawData && rectDraftDrawData.width !== 0 && (
           <WidthSetter>
             <Wrapper style={{ width: rectDrawData.width, height: rectDrawData.height }}>
-              <DrawCanvas drawData={drawData} originalDrawData={drawData}></DrawCanvas>
+              <DrawCanvas drawData={drawData} originalDrawData={drawData}/>
             </Wrapper>
             {ArrowRowComponent}
             <Wrapper style={{ width: rectDraftDrawData.width, height: rectDraftDrawData.height }}>
-              <DrawCanvas drawData={draftDrawData} originalDrawData={drawData}></DrawCanvas>
+              <DrawCanvas drawData={draftDrawData} originalDrawData={drawData}/>
             </Wrapper>
           </WidthSetter>
         )}
@@ -214,7 +216,7 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
             <BoxWrapper>
 
               <BoxGrid {...gridBoxProps} />
-              <BoxDomain {...domainBoxProps} />
+              <BoxDomain {...domainBoxProps} style={{ overflow: "visible" }}/>
               <JustFlexRow>
               <ButtonReturnWrapper>
                 <ButtonReturn onClick={() => save()}>保存</ButtonReturn>
@@ -231,8 +233,6 @@ export const Home = ({ drawData,setShowWindow,setHomeRectDrawData,setSetting }) 
   )
 };
 export function maker_RECT(setting) {
-  console.log("setting is");
-  console.log(setting)
   const { split: xnum, fieldY, fieldX } = setting;
   const ynum = Math.ceil(fieldY / (fieldX / xnum));
 
@@ -284,7 +284,7 @@ export function maker_RECTForHOME(set) {
   const { split: xnum, fieldY, fieldX } = set;
   const ynum = Math.ceil(fieldY / (fieldX / xnum));
 
-  const availableHeight = window.innerHeight - 53;
+  const availableHeight = window.innerHeight - 47;
   const availableWidth = window.innerWidth - 500;
 
   // Calculate the maximum canvasDx that satisfies both conditions

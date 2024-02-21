@@ -11,13 +11,13 @@ export const validateInput = (type, value) => {
 }
 export function checker_amplitudeScaler(obj) {
   if (!obj) return false;
-  const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'Rise', 'Pulse'];
+  const requiredAmplitudeScalerFields = ['Select', 'simulationNum', 'SineWave', 'Pulse'];
   if (!requiredAmplitudeScalerFields.every(field => obj[field] !== undefined)) return false;
   if (typeof obj['simulationNum'] !== 'number') return false;
-  if (!(obj['Select'] === 'Rise' || obj['Select'] === 'Pulse')) return false;
-  const { Rise, Pulse } = obj;
-  const riseFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
-  if (!riseFields.every(field => typeof Rise[field] === 'number')) return false;
+  if (!(obj['Select'] === 'SineWave' || obj['Select'] === 'Pulse')) return false;
+  const { SineWave, Pulse } = obj;
+  const sinewaveFields = ['slope', 'shift']; const pulseFields = ['peakPosition', 'widthFactor'];
+  if (!sinewaveFields.every(field => typeof SineWave[field] === 'number')) return false;
   if (!pulseFields.every(field => typeof Pulse[field] === 'number')) return false;
   return true;
 
@@ -40,7 +40,7 @@ export const handleKeyDown = (type) => (e) => {
   }
 };
 export const setToDefault = ( defaultAmplitudeScaler, setStrAmplitudeScaler) => {
-  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = defaultAmplitudeScaler;
+  const { SineWave: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = defaultAmplitudeScaler;
   const stringAmplitudeScaler = {
     simulationNum: simulationNum.toString(),
     slope: slope.toString(),
@@ -52,7 +52,7 @@ export const setToDefault = ( defaultAmplitudeScaler, setStrAmplitudeScaler) => 
   setStrAmplitudeScaler(stringAmplitudeScaler);
 }
 export const updateStringStates = (amplitudeScaler, setStrAmplitudeScaler) => {
-  const { Rise: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = amplitudeScaler;
+  const { SineWave: { slope, shift }, Pulse: { peakPosition, widthFactor }, simulationNum,Select } = amplitudeScaler;
   setStrAmplitudeScaler({
     simulationNum: simulationNum.toString(),
     slope: slope.toString(),

@@ -59,7 +59,7 @@ export const FrontHeaderInner = styled.div`
  width:100%;
  background-color: rgb(246,246,246);
  display:flex;
- padding:3px 20px 1px 20px;
+ padding:2px 20px 1px 20px;
  box-sizing:border-box;
  border:none;
  tex-align:left;
@@ -106,7 +106,7 @@ export const ColumnLayout = styled.div`
   font-family:times new roman,serif;
 `
 export const GridColumn = styled.div`
-  padding:8px 8px 4px 8px;
+  padding:10px 8px 5px 8px;
   box-sizing:border-box;
   display:flex;
   position:relative;
@@ -210,4 +210,40 @@ export const SliderWrapper = styled.div`
   padding-bottom:2px;
   line-height:24px;
   cursor:grab;
-`
+`;
+export const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    height: '25px',
+    minHeight: '25px',
+    fontSize: '15px',
+  }),
+  menu: (provided) => ({
+    ...provided,
+  }),
+  // オプション（選択肢）のスタイル
+  option: (provided) => ({
+    ...provided,
+    fontSize: '15px',
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: '25px',
+    padding: '0 6px',
+    fontSize: '15px'
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0px',
+    fontSize: '15px'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    fontSize: '15px',  // フォントサイズを設定
+  }),
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    height: '25px',
+    fontSize: '15px'
+  }),
+};
